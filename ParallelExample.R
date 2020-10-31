@@ -87,7 +87,7 @@ permTest <- function(    otu_table,    # rows as taxa, columns as samples
 
 
 ## Create an OTU Table with Arbitrary Values
-otu_table <- matrix(rnorm(100000),nrow= 1000)
+otu_table <- matrix(rpois(100000,100),nrow= 1000)
 colnames(otu_table) <- sample(c("control sample","treatment sample"),
                               ncol(otu_table),replace= TRUE)
 control_indices <- which(colnames(otu_table) == "control sample")
@@ -107,11 +107,9 @@ library(parallel)
 
 cl <- makeCluster(8)
 registerDoSNOW(cl)
-rej <- permTest(ranks, 
-                N = 1000,
+pvals <- permTest(ranks, 
+                N = 500,
                 indg1 = control_indices,
-                indg2 = treatment_indices,
-                alpha = 0.05,
-                adj = "fdr") #,
+                indg2 = treatment_indices) #,
 stopCluster(cl)
-rej
+pvals
