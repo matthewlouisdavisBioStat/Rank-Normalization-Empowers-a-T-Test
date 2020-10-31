@@ -1,2 +1,2 @@
-# Rank--Normalization-Empowers-a-T-Test.
+# Rank-Normalization-Empowers-a-T-Test.
 Supplementary Materials and Software Associated with the Manuscript
