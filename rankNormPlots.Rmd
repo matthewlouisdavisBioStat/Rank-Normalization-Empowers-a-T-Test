@@ -5,7 +5,7 @@ date: "9/14/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE,fig.width = 10,fig.height = 8}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(readxl)
 library(magrittr)
@@ -15,23 +15,18 @@ library(foreach)
 library(doSNOW)
 library(MicrobeDS)
 library(data.table)
-
 hmp_wd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/brokenpromise/data_og/physeqListV13.RData"
 zeller_wd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
 set.seed(52246)
 ```
 
 ```{r}
-
     ## Helper Functions
-
 '%!in%' <- function(x,y)!(x%in%y)
-
 set_colnames <- function(x,colnames){
   colnames(x) <- colnames
   x
 }
-
 ## For Plotting
 layout_fun <- function(dummy = TRUE){
   if(dummy){
@@ -40,7 +35,6 @@ layout_fun <- function(dummy = TRUE){
                     3,3),nrow=3,byrow=TRUE))
   }
 }
-
 ## Performs T-Test Simultaneously Across Matrix
 fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
   l1 <- length(indg1)
@@ -63,17 +57,12 @@ fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
   ifelse(is.nan(pvals), 1, pvals)
   }
 }
-
-
 ```
 
 
 ```{r}
-
     ## Load and Process Data
-
 physeq_list <- list()
-
 ## Import and Process Data of Zeller
 otu_table <- readxl::read_xlsx(paste0(zeller_wd,"msb0010-0766-sd4.xlsx"))
 otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
@@ -105,7 +94,6 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 physeq <- phyloseq(otu_table(otu_table,taxa_are_rows = TRUE),
                    sample_data(sample_data))
 physeq_list[["Zeller"]] <- physeq
-
 ## Microbe RISK CCFA dataset
 physeq <- RISK_CCFA
 tax <- tax_table(physeq) %>% as("matrix") %>% as.data.frame
@@ -146,7 +134,6 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 physeq <- phyloseq(otu_table(otu_table,taxa_are_rows = TRUE),
                    sample_data(sample_data))
 physeq_list[["RISK"]] <- physeq
-
 ## HMP Mid Vagina Template (Used for Simulations)
 load(hmp_wd)
 physeq <- physeqListV13$Mid.vagina
@@ -192,9 +179,7 @@ for(name in names(physeq_list)){
 
 ## Permutation T-Test
 ```{r}
-
 ## Permutation T-Test
-
   ## Nonparametric Permutation T-Test ##
   permTest <- function(    otu_table,
                            ncores = 8,
@@ -205,7 +190,6 @@ for(name in names(physeq_list)){
                            adj = "",
                            makeCluster = T,
                            juststat = FALSE){ # stat can be t, m for median, or r for robust
-
         l1 <- length(indg1)
         l2 <- length(indg2)
         S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
@@ -275,13 +259,12 @@ for(name in names(physeq_list)){
 
 
 ## Distributions of Permuted T-Statistics Under Null Conditions (COMPUTATIONALLY INTENSIVE!)
-```{r,run = FALSE}
+```{r,eval = FALSE, include = FALSE}
 set.seed(52246)
 sys <- Sys.time()
-load("HistData.RData")
+#load("HistData.RData")
 layout_fun()
 Sys.time() - sys
-
 ## Build permuted distributions based on control groups to see how t-test based on ranks looks
 #sys <- Sys.time()
 #perm_list <- list()
@@ -313,7 +296,6 @@ for(name in names(physeq_list)){
 }
 options(digits = 4)
 #save.image(file = "HistData.RData")
-
 ## Observed quantiles of the t-statistics
 quant <- lapply(perm_list,function(x){x <- (x); (rbind(cbind(quantile(x,c(0.025,0.975))),
                                                cbind(quantile(x,c(0.005,0.995))))) %>% t %>%
