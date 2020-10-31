@@ -608,7 +608,8 @@ library(parallel)
   rej <- permTest(ranks, 
                 N = 1000,
                 indg1 = indg1,
-                indg2 = indg2)
+                indg2 = indg2,
+                adj = "BH")
   stopCluster(cl2)
   rej
   
