@@ -81,12 +81,10 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 # fit <- glm(factor(sample_data$Group) ~ sample_data$Gender, 
 # family = "binomial") # Alt Model
 # coef(summary(fit))
-# AIC(fit)
 # 
 # fit <- glm(factor(sample_data$Group) ~ 1, 
 # family = "binomial") # Null Model
 # coef(summary(fit))
-# AIC(fit)
 
 
 ## Microbe RISK CCFA dataset
@@ -111,7 +109,7 @@ sample_data <- sample_data(physeq) %>% as.data.frame %>%
          !(perianal != "false" & diagnosis == "no") &
            
            ## Isolate females 
-         sex == "female" ## while there are more males, sample sizes are more balanced for females, and there are more controls
+         sex == "female"
          
            )
 ## FILTER sample data for the duplicated measures
@@ -131,17 +129,13 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 }
     ## Test if Demographic Variables May Be Controlled For
 
-## sex is very significant so we isolate for females
-## females yielded smaller, but more balanced sample sizes. 
-# fit <- glm(sample_data$diagnosis ~ sample_data$sex, 
+# fit <- glm(sample_data$diagnosis ~ sample_data$sex
 # family = "binomial") # Alt Model
-# coef(summary(fit)) # for Wald Test
-# AIC(fit)
+# coef(summary(fit))
 
 # fit <- glm(sample_data$diagnosis ~ 1, 
 # family = "binomial") # Null Model
 # coef(summary(fit))
-# AIC(fit)
 
 ################################################################################
 
