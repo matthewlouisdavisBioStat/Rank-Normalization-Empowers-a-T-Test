@@ -2,7 +2,7 @@
 # Simple Demonstration of Rank Normalization with a T-Test
 
 ## Make up an OTU Table with Arbitrary Values
-otu_table <- matrix(rnorm(100000),nrow= 1000)
+otu_table <- matrix(rpois(100000,100),nrow= 1000)
 colnames(otu_table) <- sample(c("control sample","treatment sample"),
                               ncol(otu_table),replace= TRUE)
 control_indices <- which(colnames(otu_table) == "control sample")
