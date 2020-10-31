@@ -32,6 +32,15 @@ set_colnames <- function(x,colnames){
   x
 }
 
+## For Plotting
+layout_fun <- function(dummy = TRUE){
+  if(dummy){
+    layout(matrix(c(1,1,
+                    2,2,
+                    3,3),nrow=3,byrow=TRUE))
+  }
+}
+
 ## Performs T-Test Simultaneously Across Matrix
 fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
   l1 <- length(indg1)
@@ -55,93 +64,7 @@ fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
   }
 }
 
-## Permutation T-Test
 
-  ## Nonparametric Permutation T-Test ##
-  permTest <- function(    otu_table,
-                           ncores = 8,
-                           N = 1000, 
-                           indg1, 
-                           indg2,
-                           alpha = 0.05,
-                           adj = "",
-                           makeCluster = T,
-                           juststat = FALSE){ # stat can be t, m for median, or r for robust
-
-        l1 <- length(indg1)
-        l2 <- length(indg2)
-        S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
-        S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
-        sigmas <- sqrt ( S1/l1 + S2/l2 )
-        TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
-        TObs <- ifelse(is.nan(TObs), 0, TObs)
-    ## Run in Parallel
-    ncol <- ncol(otu_table)
-    if(makeCluster){
-      cl <- makeCluster(ncores)
-      doSNOW::registerDoSNOW(cl)
-    }
-    TPerm <- foreach(i = 1:N, .combine = "cbind",.packages = "Biobase") %dopar% {
-      ## Permute Column Labels
-      otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
-      ## Recalc Statistic
-      S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
-      S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
-      sigmas <- sqrt ( S1/l1 + S2/l2 )
-      TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
-      ifelse(is.nan(TP), 0, TP)
-      
-    }
-    if(makeCluster){
-      stopCluster(cl)
-    }
-    if(juststat == TRUE){
-      return(TPerm)
-    }
-    
-    if(adj == "BH"){
-      ## BH correction for pvalues
-      ## Return OTU rejected
-      return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
-    } else if(adj == "fdr"){
-      ## FDR correction procedure for controlling pvalues
-      ## Returns Rejections 
-      cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
-      fdrs <- rep(NA, 10000)
-      names(fdrs) <- cs
-      if(makeCluster){
-        cl <- makeCluster(4)
-        doSNOW::registerDoSNOW(cl)
-      }
-      fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
-        c <- cs[i]
-        R <- sum(abs(TObs) >= c)
-        W <- mean(colSums(TPerm >= c))
-        W/R
-      }
-      if(makeCluster){
-        stopCluster(cl)
-      }
-      diff <- abs(fdrs - alpha)
-      names(diff) <- cs
-      C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
-      ## rejections
-      return(names(TObs)[which(abs(TObs) > abs(C))])
-    } else{
-      ## Return raw pvalues otherwise
-      return(rowMeans(abs(TPerm) > abs(TObs)))
-    }
-    
-  }
-
-## For Plotting
-layout_fun <- function(dummy = TRUE){
-  if(dummy){
-    layout(matrix(c(1,1,
-                    2,2,
-                    3,3),nrow=3,byrow=TRUE))
-  }
-}
 ```
 
 
@@ -266,6 +189,90 @@ for(name in names(physeq_list)){
   #abline(0,1)
 }
 ```
+
+## Permutation T-Test
+```{r}
+
+## Permutation T-Test
+
+  ## Nonparametric Permutation T-Test ##
+  permTest <- function(    otu_table,
+                           ncores = 8,
+                           N = 1000, 
+                           indg1, 
+                           indg2,
+                           alpha = 0.05,
+                           adj = "",
+                           makeCluster = T,
+                           juststat = FALSE){ # stat can be t, m for median, or r for robust
+
+        l1 <- length(indg1)
+        l2 <- length(indg2)
+        S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
+        S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+        sigmas <- sqrt ( S1/l1 + S2/l2 )
+        TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
+        TObs <- ifelse(is.nan(TObs), 0, TObs)
+    ## Run in Parallel
+    ncol <- ncol(otu_table)
+    if(makeCluster){
+      cl <- makeCluster(ncores)
+      doSNOW::registerDoSNOW(cl)
+    }
+    TPerm <- foreach(i = 1:N, .combine = "cbind",.packages = "Biobase") %dopar% {
+      ## Permute Column Labels
+      otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
+      ## Recalc Statistic
+      S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
+      S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
+      sigmas <- sqrt ( S1/l1 + S2/l2 )
+      TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
+      ifelse(is.nan(TP), 0, TP)
+      
+    }
+    if(makeCluster){
+      stopCluster(cl)
+    }
+    if(juststat == TRUE){
+      return(TPerm)
+    }
+    
+    if(adj == "BH"){
+      ## BH correction for pvalues
+      ## Return OTU rejected
+      return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
+    } else if(adj == "fdr"){
+      ## FDR correction procedure for controlling pvalues
+      ## Returns Rejections 
+      cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
+      fdrs <- rep(NA, 10000)
+      names(fdrs) <- cs
+      if(makeCluster){
+        cl <- makeCluster(4)
+        doSNOW::registerDoSNOW(cl)
+      }
+      fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
+        c <- cs[i]
+        R <- sum(abs(TObs) >= c)
+        W <- mean(colSums(TPerm >= c))
+        W/R
+      }
+      if(makeCluster){
+        stopCluster(cl)
+      }
+      diff <- abs(fdrs - alpha)
+      names(diff) <- cs
+      C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
+      ## rejections
+      return(names(TObs)[which(abs(TObs) > abs(C))])
+    } else{
+      ## Return raw pvalues otherwise
+      return(rowMeans(abs(TPerm) > abs(TObs)))
+    }
+    
+  }
+```
+
 
 ## Distributions of Permuted T-Statistics Under Null Conditions (COMPUTATIONALLY INTENSIVE!)
 ```{r,run = FALSE}
