@@ -3,8 +3,13 @@
 
     ## Note: I'm using R 3.6.3 Right Now ##
 
-## Choose Your Data, Zeller or RISK
+    ## Choose Your Data, Zeller or RISK
+
+## Download xlsx files directly from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/,
+##    and save in datawd
 #dataset <- c("Zeller"); datawd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
+
+## Load MicrobeDS curated data
 dataset <- c("RISK"); library(MicrobeDS)
 
 ################################################################################
@@ -45,7 +50,6 @@ fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
     ## Load Data
 
 ## Import and Process Data of Zeller
-## Download xlsx files directly from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/
 if(dataset == "Zeller"){
 otu_table <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd4.xlsx"))
 otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
