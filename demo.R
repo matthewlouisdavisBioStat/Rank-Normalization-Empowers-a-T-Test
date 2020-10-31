@@ -606,14 +606,9 @@ library(parallel)
   cl2 <- makeCluster(8)
   registerDoSNOW(cl2)
   rej <- permTest(ranks, 
-                N = 10000,
+                N = 1000,
                 indg1 = indg1,
-                indg2 = indg2,
-                alpha = 0.05,
-                adj = "fdr") #,
-                #makeCluster = F,
-                #ncores = 16, 
-                #juststat = FALSE)
+                indg2 = indg2)
   stopCluster(cl2)
   rej
   
