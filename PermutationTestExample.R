@@ -100,7 +100,7 @@ otu_table <- otu_table[rowSums(otu_table) > 0,]
 ranks <- apply(otu_table,2,rank)
 
 ## Run Permutation t-test non-parametric alternative to Welchs t-test
-## Returns names of rejected OTU only by default
+## Returns pvals of each OTU by default
 library(foreach)
 library(doSNOW)
 library(parallel)
