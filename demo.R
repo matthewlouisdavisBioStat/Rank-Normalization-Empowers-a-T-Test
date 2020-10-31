@@ -4,7 +4,7 @@
     ## Note: I'm using R 3.6.3 Right Now ##
 
 ## Choose Your Data, Zeller or RISK
-#dataset <- c("Zeller")
+#dataset <- c("Zeller"); datawd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
 dataset <- c("RISK"); library(MicrobeDS)
 
 ################################################################################
@@ -47,12 +47,11 @@ fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
 ## Import and Process Data of Zeller
 ## Download xlsx files directly from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/
 if(dataset == "Zeller"){
-wd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
-otu_table <- readxl::read_xlsx(paste0(wd,"msb0010-0766-sd4.xlsx"))
+otu_table <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd4.xlsx"))
 otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
 rownames(otu_table) <- otu_table[,1]
 otu_table <- otu_table[,2:ncol(otu_table)]
-readData <- readxl::read_xlsx(paste0(wd, "msb0010-0766-sd2.xlsx"), sheet = 3)
+readData <- readxl::read_xlsx(paste0(datawd, "msb0010-0766-sd2.xlsx"), sheet = 3)
 rawReads <- readData$`Raw Reads`
 names(rawReads) <- readData$'Sample ID'
 rawReads <- rawReads[which(names(rawReads) %in% colnames(otu_table))]
@@ -60,7 +59,7 @@ rawReads <- as.numeric(rawReads)
 for(j in 1:ncol(otu_table)){
   otu_table[,j] <- otu_table[,j]*rawReads[j]
 }
-sample_data <- readxl::read_xlsx(paste0(wd,"msb0010-0766-sd2.xlsx"),
+sample_data <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd2.xlsx"),
                                  sheet = 2) %>% as.data.frame %>%
   subset(Diagnosis %in% c("Normal","Cancer")) %>%
   as.data.frame
