@@ -6,7 +6,9 @@
 ## Choose Your Data, Zeller or RISK
 
 ## Download xlsx files directly from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/,
-##    and save in datawd
+#     "msb0010-0766-sd4.xlsx"
+#     "msb0010-0766-sd2.xlsx"
+## and save in datawd
 #dataset <- c("Zeller"); datawd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
 
 ## Load MicrobeDS curated data
