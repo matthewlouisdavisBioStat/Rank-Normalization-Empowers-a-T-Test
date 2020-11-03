@@ -1,9 +1,9 @@
 
-    ## Real Data Analysis ##
+## Real Data Analysis ##
 
-    ## Note: I'm using R 3.6.3 Right Now ##
+## Note: I'm using R 3.6.3 Right Now ##
 
-    ## Choose Your Data, Zeller or RISK
+## Choose Your Data, Zeller or RISK
 
 ## Download xlsx files directly from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/,
 ##    and save in datawd
@@ -12,11 +12,19 @@
 ## Load MicrobeDS curated data
 dataset <- c("RISK"); library(MicrobeDS)
 
+## Load Libraries
+library(dplyr)
+library(readxl)
+#library(metagenomeSeq)
+#library(edgeR)
+#library(limma)
+#library(DESeq2)
+#library(ALDEx2)
+library(phyloseq)
 ################################################################################
 
-    ## Helper Functions/Libraries
+## Helper Functions
 
-library(dplyr)
 
 '%!in%' <- function(x,y)!(x%in%y)
 
@@ -37,49 +45,49 @@ fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
   if(stat == "yes"){
     return(obsT)
   } else{
-  pvals <- 2*(1-pt(abs(obsT), df = df))
-  if(sign){
-    pvals <- pvals*sign(obsT)
-  }
-  ifelse(is.nan(pvals), 1, pvals)
+    pvals <- 2*(1-pt(abs(obsT), df = df))
+    if(sign){
+      pvals <- pvals*sign(obsT)
+    }
+    ifelse(is.nan(pvals), 1, pvals)
   }
 }
 
 ################################################################################
 
-    ## Load Data
+## Load Data
 
 ## Import and Process Data of Zeller
 if(dataset == "Zeller"){
-otu_table <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd4.xlsx"))
-otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
-rownames(otu_table) <- otu_table[,1]
-otu_table <- otu_table[,2:ncol(otu_table)]
-readData <- readxl::read_xlsx(paste0(datawd, "msb0010-0766-sd2.xlsx"), sheet = 3)
-rawReads <- readData$`Raw Reads`
-names(rawReads) <- readData$'Sample ID'
-rawReads <- rawReads[which(names(rawReads) %in% colnames(otu_table))]
-rawReads <- as.numeric(rawReads)
-for(j in 1:ncol(otu_table)){
-  otu_table[,j] <- otu_table[,j]*rawReads[j]
-}
-sample_data <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd2.xlsx"),
-                                 sheet = 2) %>% as.data.frame %>%
-  subset(Diagnosis %in% c("Normal","Cancer")) %>%
-  as.data.frame
-         
-rownames(sample_data) <- sample_data$`Sample ID`
-sample_data <- sample_data[colnames(otu_table),]
-otu_table <- as(otu_table,"matrix")
-otu_table <- otu_table[,colnames(otu_table) %in% rownames(sample_data)]
-sample_data <- sample_data[colnames(otu_table),]
-indg1 <- which(sample_data$Group == "CRC")
-indg2 <- which(sample_data$Group == "Control")
-otu_table <- otu_table[rowSums(otu_table)>0,]
-design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
+  otu_table <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd4.xlsx"))
+  otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
+  rownames(otu_table) <- otu_table[,1]
+  otu_table <- otu_table[,2:ncol(otu_table)]
+  readData <- readxl::read_xlsx(paste0(datawd, "msb0010-0766-sd2.xlsx"), sheet = 3)
+  rawReads <- readData$`Raw Reads`
+  names(rawReads) <- readData$'Sample ID'
+  rawReads <- rawReads[which(names(rawReads) %in% colnames(otu_table))]
+  rawReads <- as.numeric(rawReads)
+  for(j in 1:ncol(otu_table)){
+    otu_table[,j] <- otu_table[,j]*rawReads[j]
+  }
+  sample_data <- readxl::read_xlsx(paste0(datawd,"msb0010-0766-sd2.xlsx"),
+                                   sheet = 2) %>% as.data.frame %>%
+    subset(Diagnosis %in% c("Normal","Cancer")) %>%
+    as.data.frame
+  
+  rownames(sample_data) <- sample_data$`Sample ID`
+  sample_data <- sample_data[colnames(otu_table),]
+  otu_table <- as(otu_table,"matrix")
+  otu_table <- otu_table[,colnames(otu_table) %in% rownames(sample_data)]
+  sample_data <- sample_data[colnames(otu_table),]
+  indg1 <- which(sample_data$Group == "CRC")
+  indg2 <- which(sample_data$Group == "Control")
+  otu_table <- otu_table[rowSums(otu_table)>0,]
+  design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
 }
 
-    ## Test if Demographic Variables May Be Controlled For
+## Test if Demographic Variables May Be Controlled For
 
 # fit <- glm(factor(sample_data$Group) ~ sample_data$Gender, 
 # family = "binomial") # Alt Model
@@ -92,45 +100,44 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 
 ## Microbe RISK CCFA dataset
 if(dataset == "RISK"){
-library(phyloseq)
-physeq <- MicrobeDS::RISK_CCFA
-tax <- tax_table(physeq) %>% as("matrix") %>% as.data.frame
-sample_data <- sample_data(physeq) %>% as.data.frame %>%
-  subset(antibiotics == "false" & ## no antibiotics
-         collection == "RISK" & ## isolates only the RISK patients, not other studies
-         diagnosis %in% c("CD","no") & ## two disease statuses of interest, excludes UC etc.
-         biopsy_location %in% c("Terminal ileum") & ## the most common biopsy location
-         diseasesubtype %in% c("iCD","no") & ## most common type of CD
-         sample_type == "biopsy" & ## Only 
-         b_cat == "B1" & ## Removed B2,B3
+  physeq <- MicrobeDS::RISK_CCFA
+  tax <- tax_table(physeq) %>% as("matrix") %>% as.data.frame
+  sample_data <- sample_data(physeq) %>% as.data.frame %>%
+    subset(antibiotics == "false" & ## no antibiotics
+             collection == "RISK" & ## isolates only the RISK patients, not other studies
+             diagnosis %in% c("CD","no") & ## two disease statuses of interest, excludes UC etc.
+             biopsy_location %in% c("Terminal ileum") & ## the most common biopsy location
+             diseasesubtype %in% c("iCD","no") & ## most common type of CD
+             sample_type == "biopsy" & ## Only 
+             b_cat == "B1" & ## Removed B2,B3
+             
+             ## Remove subjects with symptoms of other conditions
+             !(inflammationstatus == "inflamed" & diagnosis == "no") &
+             !(ileal_invovlement == "true" & diagnosis == "no") & 
+             !(gastric_involvement == "true" & diagnosis == "no") & 
+             !(disease_extent != "missing" & diagnosis == "no") & 
+             !(perianal != "false" & diagnosis == "no") &
+             
+             ## Isolate females 
+             sex == "female"
            
-            ## Remove subjects with symptoms of other conditions
-         !(inflammationstatus == "inflamed" & diagnosis == "no") &
-         !(ileal_invovlement == "true" & diagnosis == "no") & 
-         !(gastric_involvement == "true" & diagnosis == "no") & 
-         !(disease_extent != "missing" & diagnosis == "no") & 
-         !(perianal != "false" & diagnosis == "no") &
-           
-           ## Isolate females 
-         sex == "female"
-         
-           )
-## FILTER sample data for the duplicated measures
-t <- table(sample_data$host_subject_id)
-t <- t[t == 1]
-s <- (sample_data[sample_data$host_subject_id %!in% names(t),])
-s <- s[order(s$host_subject_id),]
-sample_data <- sample_data[-which(rownames(sample_data) %in% rownames(s)),]
-otu_table <- (otu_table(physeq) %>% as("matrix"))[,rownames(sample_data)]
-sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
-indg1 <- which(sample_data$diagnosis == "no")
-indg2 <- which(sample_data$diagnosis == "CD")
-sample_data$Group <- sample_data$diagnosis
-sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
-otu_table <- otu_table[rowSums(otu_table)>0,]
-design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
+    )
+  ## FILTER sample data for the duplicated measures
+  t <- table(sample_data$host_subject_id)
+  t <- t[t == 1]
+  s <- (sample_data[sample_data$host_subject_id %!in% names(t),])
+  s <- s[order(s$host_subject_id),]
+  sample_data <- sample_data[-which(rownames(sample_data) %in% rownames(s)),]
+  otu_table <- (otu_table(physeq) %>% as("matrix"))[,rownames(sample_data)]
+  sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
+  indg1 <- which(sample_data$diagnosis == "no")
+  indg2 <- which(sample_data$diagnosis == "CD")
+  sample_data$Group <- sample_data$diagnosis
+  sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
+  otu_table <- otu_table[rowSums(otu_table)>0,]
+  design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
 }
-    ## Test if Demographic Variables May Be Controlled For
+## Test if Demographic Variables May Be Controlled For
 
 # fit <- glm(sample_data$diagnosis ~ sample_data$sex
 # family = "binomial") # Alt Model
@@ -142,7 +149,7 @@ design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_dat
 
 ################################################################################
 
-  ## Normalizations
+## Normalizations
 
 ## Apply rank normalization, analyze distributions. 
 ranks <- apply(otu_table, 2, rank)
@@ -166,8 +173,8 @@ tmm <-  t(t(otu_table) / w)
 
 
 ################################################################################
-    
-    ## Run Differential Abundance Tests
+
+## Run Differential Abundance Tests
 
 ## store rejected OTU by each methodology
 rej_list <- list()
@@ -187,135 +194,136 @@ for(i in 1:length(otu_norms)){
   rej_list[[paste0("t-test_",names(otu_norms)[i])]] <- padj[names(rej)]
   
   if(names(otu_norms)[i] != "ranks"){
-  pvals <- apply(t(otu_norm), 2, function(x){
-    wilcox.test(x[indg1], x[indg2],exact = F)$p.value
-})
-  
-  
-  padj <- p.adjust(abs(pvals), "BH")
-  rej <- which(padj < .05)
-  rej_list[[paste0("wilcox_",names(otu_norms)[i])]] <- padj[names(rej)]
+    pvals <- apply(t(otu_norm), 2, function(x){
+      wilcox.test(x[indg1], x[indg2],exact = F)$p.value
+    })
+    
+    
+    padj <- p.adjust(abs(pvals), "BH")
+    rej <- which(padj < .05)
+    rej_list[[paste0("wilcox_",names(otu_norms)[i])]] <- padj[names(rej)]
   }
 }
 
 ## ALDEx2
-  library(ALDEx2)
-  conditions <- rep(NA, ncol(otu_table))
-  conditions[indg1] <- "indg1"
-  conditions[indg2] <- "indg2"
-  aldex <- aldex(as.data.frame(round(otu_table)), 
+library(ALDEx2)
+conditions <- rep(NA, ncol(otu_table))
+conditions[indg1] <- "indg1"
+conditions[indg2] <- "indg2"
+aldex <- aldex(as.data.frame(round(otu_table)), 
                conditions = conditions,
                test ="t", 
                effect = FALSE)
-  pvals <- aldex$we.ep
-  padj <- p.adjust(pvals, "BH")
-  names(padj) <- rownames(aldex)
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("aldex")]] <- padj[names(rej)]
-  
+pvals <- aldex$we.ep
+padj <- p.adjust(pvals, "BH")
+names(padj) <- rownames(aldex)
+rej <- which(padj < 0.05)
+rej_list[[paste0("aldex")]] <- padj[names(rej)]
+
 ## Limma Voom with TMM
-  library(limma) 
-  otu_norm <- tmm
-  res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
-    lmFit(design = design) %>%
-    eBayes(robust = T) %>%
-    topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
-  pval <- res$P.Value
-  names(pval) <- rownames(res)
-  padj <- p.adjust(pval, "BH")
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("voom_tmm")]] <- padj[names(rej)]
-  
+library(limma)
+otu_norm <- tmm
+res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
+  lmFit(design = design) %>%
+  eBayes(robust = T) %>%
+  topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
+pval <- res$P.Value
+names(pval) <- rownames(res)
+padj <- p.adjust(pval, "BH")
+rej <- which(padj < 0.05)
+rej_list[[paste0("voom_tmm")]] <- padj[names(rej)]
+
 ## Limma Voom with TSS
-  library(limma)
-  otu_norm <- tss
-  res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
-    lmFit(design = design) %>%
-    eBayes(robust = T) %>%
-    topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
-  pval <- res$P.Value
-  names(pval) <- rownames(res)
-  padj <- p.adjust(pval, "BH")
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("voom_tss")]] <- padj[names(rej)]
+library(limma)
+otu_norm <- tss
+res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
+  lmFit(design = design) %>%
+  eBayes(robust = T) %>%
+  topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
+pval <- res$P.Value
+names(pval) <- rownames(res)
+padj <- p.adjust(pval, "BH")
+rej <- which(padj < 0.05)
+rej_list[[paste0("voom_tss")]] <- padj[names(rej)]
 
 ## Limma Voom with CSS
-  library(limma)
-  otu_norm <- css
-  res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
-    lmFit(design = design) %>%
-    eBayes(robust = T) %>%
-    topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
-  pval <- res$P.Value
-  names(pval) <- rownames(res)
-  padj <- p.adjust(pval, "BH")
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("voom_css")]] <- padj[names(rej)]
+library(limma)
+otu_norm <- css
+res <- voom(counts = otu_norm, design = design, plot = FALSE) %>%
+  lmFit(design = design) %>%
+  eBayes(robust = T) %>%
+  topTable(coef = 2, n = nrow(otu_norm), sort.by = "none")
+pval <- res$P.Value
+names(pval) <- rownames(res)
+padj <- p.adjust(pval, "BH")
+rej <- which(padj < 0.05)
+rej_list[[paste0("voom_css")]] <- padj[names(rej)]
 
 ## MetagenomeSeq
-  library(metagenomeSeq)
-  otu_norm <- css
-  MGS <- newMRexperiment(counts = otu_norm, phenoData = AnnotatedDataFrame(sample_data), 
-                           normFactors = colSums(otu_norm))
-  res <- fitZig(MGS, design) %>%
-          MRfulltable(number = nrow(get("counts", assayData(MGS))))
-  pvals <- res[, c("pvalues")]
-  names(pvals) <- rownames(res)
-  pvals <- pvals[!is.nan(pvals)]
-  padj <- p.adjust(pvals, "BH")
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("metagenomeSeq")]] <- padj[names(rej)]
-  
+library(metagenomeSeq)
+otu_norm <- css
+MGS <- newMRexperiment(counts = otu_norm, phenoData = AnnotatedDataFrame(sample_data), 
+                       normFactors = colSums(otu_norm))
+res <- fitZig(MGS, design) %>%
+  MRfulltable(number = nrow(get("counts", assayData(MGS))))
+pvals <- res[, c("pvalues")]
+names(pvals) <- rownames(res)
+pvals <- pvals[!is.nan(pvals)]
+padj <- p.adjust(pvals, "BH")
+rej <- which(padj < 0.05)
+rej_list[[paste0("metagenomeSeq")]] <- padj[names(rej)]
+
 ## DESeq2 
-  library(DESeq2)
-  geoMeans <- apply(round(otu_table), 
-                    1, 
-                    function(row) if (all(row == 0)) 0 else exp(mean(log(row[row != 0]))))
-  res <- DESeqDataSetFromMatrix(
-    countData = round(otu_table),
-    colData = as.data.frame(sample_data$Group),
-    design = design) %>%
-    estimateSizeFactors(geoMeans = geoMeans) %>%
-    DESeq %>%
-    results
-  pvals <- res$pvalue
-  names(pvals) <- rownames(res)
-  pvals <- pvals[!is.na(pvals)]
-  padj <- p.adjust(pvals, "BH")
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("DESeq2")]] <- padj[names(rej)]
-  
-  
+library(DESeq2)
+geoMeans <- apply(round(otu_table), 
+                  1, 
+                  function(row) if (all(row == 0)) 0 else exp(mean(log(row[row != 0]))))
+res <- DESeqDataSetFromMatrix(
+  countData = round(otu_table),
+  colData = as.data.frame(sample_data$Group),
+  design = design) %>%
+  estimateSizeFactors(geoMeans = geoMeans) %>%
+  DESeq %>%
+  results
+pvals <- res$pvalue
+names(pvals) <- rownames(res)
+pvals <- pvals[!is.na(pvals)]
+padj <- p.adjust(pvals, "BH")
+rej <- which(padj < 0.05)
+rej_list[[paste0("DESeq2")]] <- padj[names(rej)]
+
+
 ## edgeR
-  res <- DGEList(counts = otu_table, group = sample_data$Group) %>%
-    calcNormFactors(method = "TMM") %>%
-    estimateGLMRobustDisp %>%
-    glmQLFit(robust = TRUE,design = design) %>%
-    glmQLFTest(coef = 2)
-  pvals <- res$table$PValue
-  padj <- p.adjust(pvals, "BH")
-  names(padj) <- rownames(res$table)
-  rej <- which(padj < 0.05)
-  rej_list[[paste0("edgeR")]] <- padj[names(rej)]
-  
+library(edgeR)
+res <- DGEList(counts = otu_table, group = sample_data$Group) %>%
+  calcNormFactors(method = "TMM") %>%
+  estimateGLMRobustDisp %>%
+  glmQLFit(robust = TRUE,design = design) %>%
+  glmQLFTest(coef = 2)
+pvals <- res$table$PValue
+padj <- p.adjust(pvals, "BH")
+names(padj) <- rownames(res$table)
+rej <- which(padj < 0.05)
+rej_list[[paste0("edgeR")]] <- padj[names(rej)]
+
 ################################################################################
-    
-    ## Shared Rejections (Significant Taxa) Between Methods
-    
-  ## the proportion of shared OTU between methodologies m1 and m2, 
-  ## out of the total number rejections from methodology m1
-  intersect_prop <- function(m1,m2){
-    n1 <- names(rej_list[[m1]])
-    n2 <- names(rej_list[[m2]])
-    (intersect(n1,n2) %>% length)/length(n1) %>% round(4)
-  }
-  
-  ## Intersect Matrix (proportion of each row out of the shared taxa between columns)
+
+## Shared Rejections (Significant Taxa) Between Methods
+
+## the proportion of shared OTU between methodologies m1 and m2, 
+## out of the total number rejections from methodology m1
+intersect_prop <- function(m1,m2){
+  n1 <- names(rej_list[[m1]])
+  n2 <- names(rej_list[[m2]])
+  (intersect(n1,n2) %>% length)/length(n1) %>% round(4)
+}
+
+## Intersect Matrix (proportion of each row out of the shared taxa between columns)
 shared_taxa <- matrix(c(1:length(rej_list)),nrow = length(rej_list),ncol = length(rej_list))
 for(i in 1:length(rej_list)){
   for(j in 1:length(rej_list)){
     shared_taxa[i,j] <- intersect_prop(i,
-                                  j)
+                                       j)
   }
 }
 rownames(shared_taxa) <- names(rej_list)
@@ -324,8 +332,8 @@ shared_taxa[is.nan(shared_taxa)] <- 0
 shared_taxa
 
 ################################################################################
-  
-    ## Display Results
+
+## Display Results
 otu_norm <- ranks
 rej <- rej_list$`t-test_ranks`
 
@@ -358,10 +366,10 @@ if(dataset == "Zeller"){
   options(scipen = 4)
   View(TaxaIdentified)
 }
-   
-  
+
+
 ## For RISK
-  if(dataset == "RISK"){
+if(dataset == "RISK"){
   rej <- rej_list$`t-test_ranks`
   rej_taxa <- tax[names(rej),] %>% as.data.frame %>% mutate(padj = rej)
   TaxaIdentified <- data.frame()
@@ -370,20 +378,20 @@ if(dataset == "Zeller"){
     y <- otu_norm[taxa,indg2]
     t <- t.test(x,y)
     TaxaIdentified <- TaxaIdentified %>% rbind(c(
-    t$estimate[c(1,2)],
-    t$estimate[2] - t$estimate[1],
-    -rev(t$conf.int),
-    # t$conf.int*(sign(t$estimate[2] - t$estimate[1])),
-    t$p.value,
-    rej[taxa])) %>%
+      t$estimate[c(1,2)],
+      t$estimate[2] - t$estimate[1],
+      -rev(t$conf.int),
+      # t$conf.int*(sign(t$estimate[2] - t$estimate[1])),
+      t$p.value,
+      rej[taxa])) %>%
       as.data.frame %>%
       set_colnames(c("Mean Rank Control",
-                  "Mean Rank CD",
-                  "Mean Difference",
-                  "LB (2.5%)",
-                  "UB (9.75%)",
-                  "Pvalue",
-                  "Padj"))
+                     "Mean Rank CD",
+                     "Mean Difference",
+                     "LB (2.5%)",
+                     "UB (9.75%)",
+                     "Pvalue",
+                     "Padj"))
   }
   TaxaIdentified$taxon<- tax[names(rej),c("Order","Family","Genus","Species")] %>%
     apply(1,function(x){
@@ -397,8 +405,8 @@ if(dataset == "Zeller"){
 }
 
 ################################################################################ 
-  
-      ## Compare to Original Findings
+
+## Compare to Original Findings
 
 ## Compare Zeller to Original Findings
 if (dataset == "Zeller") {
@@ -461,10 +469,10 @@ if (dataset == "RISK") {
     "Gemellaceae")        
   
   decreased <- c(
-     "Bacteroidales",       # found by ranks
-     "Clostridiales",       # (excluding Veillonellaceae) found by ranks
-     "Erysipelotrichaceae", # found by ranks
-     "Bifidobacteriaceae")
+    "Bacteroidales",       # found by ranks
+    "Clostridiales",       # (excluding Veillonellaceae) found by ranks
+    "Erysipelotrichaceae", # found by ranks
+    "Bifidobacteriaceae")
   
   ## Recognized Taxa
   original_findings <-
@@ -519,95 +527,95 @@ View(TaxaIdentified)
 write.csv(TaxaIdentified,file = paste0(dataset,"_Rejects.csv"))
 ################################################################################
 
-  ## Nonparametric Permutation T-Test ##
+## Nonparametric Permutation T-Test ##
 permTest <- function(    otu_table,    # rows as taxa, columns as samples
-                           ncores = 8, # number of cores used
-                           N = 1000,   # number of permutations
-                           indg1,      # column indices of group 1
-                           indg2,      # column indices of group 2
-                           alpha = 0.05, # significance level 
-                           adj = "",   # BH? FDR? what kind of adjustment, if any
-                           makeCluster = T, # if we should make a cluster within the function
-                           juststat = FALSE){ # return only the permuted t-statistics
-    ## Observed T-Statistic
-    l1 <- length(indg1)
-    l2 <- length(indg2)
-    S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
-    S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+                         ncores = 8, # number of cores used
+                         N = 1000,   # number of permutations
+                         indg1,      # column indices of group 1
+                         indg2,      # column indices of group 2
+                         alpha = 0.05, # significance level 
+                         adj = "",   # BH? FDR? what kind of adjustment, if any
+                         makeCluster = T, # if we should make a cluster within the function
+                         juststat = FALSE){ # return only the permuted t-statistics
+  ## Observed T-Statistic
+  l1 <- length(indg1)
+  l2 <- length(indg2)
+  S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
+  S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+  sigmas <- sqrt ( S1/l1 + S2/l2 )
+  TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
+  TObs <- ifelse(is.nan(TObs), 0, TObs)
+  
+  ## Run in Parallel
+  ncol <- ncol(otu_table)
+  if(makeCluster){
+    cl <- makeCluster(ncores)
+    doSNOW::registerDoSNOW(cl)
+  }
+  TPerm <- foreach(i = 1:N, .combine = "cbind") %dopar% {
+    ## Permute Column Labels
+    otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
+    ## Recalc Statistic
+    S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
+    S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
     sigmas <- sqrt ( S1/l1 + S2/l2 )
-    TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
-    TObs <- ifelse(is.nan(TObs), 0, TObs)
-    
-    ## Run in Parallel
-    ncol <- ncol(otu_table)
+    TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
+    ifelse(is.nan(TP), 0, TP)
+  }
+  if(makeCluster){
+    stopCluster(cl)
+  }
+  if(juststat == TRUE){
+    return(TPerm)
+  }
+  
+  if(adj == "BH"){
+    ## BH correction for pvalues 
+    return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
+  } else if(adj == "fdr"){
+    ## FDR stepdown correction procedure for controlling pvalues
+    cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
+    fdrs <- rep(NA, 10000)
+    names(fdrs) <- cs
     if(makeCluster){
-      cl <- makeCluster(ncores)
+      cl <- makeCluster(4)
       doSNOW::registerDoSNOW(cl)
     }
-    TPerm <- foreach(i = 1:N, .combine = "cbind") %dopar% {
-      ## Permute Column Labels
-      otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
-      ## Recalc Statistic
-      S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
-      S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
-      sigmas <- sqrt ( S1/l1 + S2/l2 )
-      TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
-      ifelse(is.nan(TP), 0, TP)
+    fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
+      c <- cs[i]
+      R <- sum(abs(TObs) >= c)
+      W <- mean(colSums(TPerm >= c))
+      W/R
     }
     if(makeCluster){
       stopCluster(cl)
     }
-    if(juststat == TRUE){
-      return(TPerm)
-    }
-    
-    if(adj == "BH"){
-      ## BH correction for pvalues 
-      return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
-    } else if(adj == "fdr"){
-      ## FDR stepdown correction procedure for controlling pvalues
-      cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
-      fdrs <- rep(NA, 10000)
-      names(fdrs) <- cs
-      if(makeCluster){
-        cl <- makeCluster(4)
-        doSNOW::registerDoSNOW(cl)
-      }
-      fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
-        c <- cs[i]
-        R <- sum(abs(TObs) >= c)
-        W <- mean(colSums(TPerm >= c))
-        W/R
-      }
-      if(makeCluster){
-        stopCluster(cl)
-      }
-      diff <- abs(fdrs - alpha)
-      names(diff) <- cs
-      C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
-      ## rejections
-      return(names(TObs)[which(abs(TObs) > abs(C))])
-    } else{
-      ## Return raw pvalues otherwise
-      return(rowMeans(abs(TPerm) > abs(TObs)))
-    }
-    
+    diff <- abs(fdrs - alpha)
+    names(diff) <- cs
+    C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
+    ## rejections
+    return(names(TObs)[which(abs(TObs) > abs(C))])
+  } else{
+    ## Return raw pvalues otherwise
+    return(rowMeans(abs(TPerm) > abs(TObs)))
   }
-################################################################################
   
-  ## Run Permutation t-test non-parametric alternative to Welchs t-test
+}
+################################################################################
+
+## Run Permutation t-test non-parametric alternative to Welchs t-test
 library(foreach)
 library(doSNOW)
 library(parallel)
-  
-  cl2 <- makeCluster(8)
-  registerDoSNOW(cl2)
-  rej <- permTest(ranks, 
-                N = 1000,
+
+cl2 <- makeCluster(4)
+registerDoSNOW(cl2)
+rej <- permTest(ranks, 
+                N = 500,
                 indg1 = indg1,
                 indg2 = indg2,
                 adj = "BH")
-  stopCluster(cl2)
-  rej
-  
-  
+stopCluster(cl2)
+rej
+
+
