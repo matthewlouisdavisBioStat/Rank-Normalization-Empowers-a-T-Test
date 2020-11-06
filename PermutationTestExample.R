@@ -112,4 +112,4 @@ pvals <- permTest(ranks,
                 indg1 = control_indices,
                 indg2 = treatment_indices) #,
 stopCluster(cl)
-pvals
+head(pvals)
