@@ -186,38 +186,6 @@ aldexTTest <- function(res){
   return(list)
 }
 
-aldexWTest <- function(res){
-  out = cbind(res$wi.ep, res$wi.eBH)
-  colnames(out) = c("rawP","adjP")
-  rownames(out) = rownames(res)
-  test <- "aldexW"
-  reject <-  rownames(out)[which(out[,"adjP"] < .05)]
-  cor_rej <- sum(reject %in% degenes)
-  err_rej <- sum(reject %!in% degenes)
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
-  Sensitivity <- cor_rej / length(degenes)
-  FDR <- err_rej / (cor_rej + err_rej)
-  
-  normFacts <- "aldex"
-  res <- matrix(c( test,
-                   normFacts,
-                   Sensitivity,
-                   Specificity,
-                   FDR ), nrow = 1)
-  colnames(res) <- c( "test",
-                      "norm",
-                      "sens",
-                      "spec",
-                      "fdr" )
-  
-  res[,"fdr"] <- ifelse(is.nan(res[,"fdr"]), 0, res[,"fdr"])
-  rawP <- out[,"rawP"]
-  names(rawP) <- rownames(out)
-  list <- list("res" = res,
-               "pvals" = rawP)
-  return(list)
-}
-
 ### Perform EdgeR, robust version for overdispersion estimation.
 ### edgeR_QLFTest_robust_3.6.4
 #   function (counts, group, design = NULL, mc.cores = 4, prior.df = 10) 
