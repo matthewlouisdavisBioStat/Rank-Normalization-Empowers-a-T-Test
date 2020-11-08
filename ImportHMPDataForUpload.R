@@ -24,6 +24,14 @@ for(i in reqpkg)
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v13.txt.gz
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v35.txt.gz
 
+
+## Get filtered/cleaned OTU table from my github
+# github.com/matthewlouisdavisBioStat/Rank-Normalization-Empowers-a-T-Test
+# in the folder hmp_data.zip
+# v13_psn_otu.genus.fixed.txt
+# v35_psn_otu.genus.fixed.txt
+
+
 # Sample metadata:
 # http://downloads.ihmpdcc.org/data/HMQCP/v13_map_uniquebyPSN.txt.bz2
 # http://downloads.ihmpdcc.org/data/HMQCP/v35_map_uniquebyPSN.txt.bz2
