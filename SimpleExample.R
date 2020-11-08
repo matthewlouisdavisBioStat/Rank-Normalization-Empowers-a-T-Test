@@ -46,5 +46,5 @@ fastT <- function(otu, ## otu_table, matrix with rows as taxa columns as samples
 }
 
 ## returns raw p-values
-results <- fastT(otu_table,treatment_indices,control_indices)
+results <- fastT(ranks,treatment_indices,control_indices)
 head(results)
