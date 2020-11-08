@@ -26,13 +26,7 @@ dataWD <-
 "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration"
 setwd(dataWD)
 source("msWaldHMP.R") ## copy/pasted from github
-knitr::opts_chunk$set(
-  cache = FALSE,
-  tidy = TRUE,
-  autodep = FALSE,
-  root.dir = WD,
-  eval = TRUE
-)
+
 # The required package list:
 reqpkg = c("parallel",
            "phyloseq",
