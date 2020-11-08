@@ -248,12 +248,13 @@ print(length(OutLieList))
 
 ## Note From Matt: Running the actual code broke two of my university's computers
 ## I requested this directly from Hawinkel et al, who kindly provided it instead.
-load(file = "CovListEst.RData")
+#load(file = "CovListEst.RData")
 # }
-covList = lapply(covListEst, function(x) {
-  x$opt.cov
-})
+#covList = lapply(covListEst, function(x) {
+#  x$opt.cov
+#})
 #'
+load(file = "covList.RData")
 
 ### generate Dirichlet realisations, taken from gtools (identical in MCMCpack)
 rDirichlet <- function(n, alpha) {
