@@ -10,7 +10,7 @@
 
 ## distribution to generate data from
 distribs = c("negbinCorOut")
-#distribs = c("negbinCorOut")
+#distribs = c("betabinCor")
 
 ## number of sims
 reps <- 1:25L
