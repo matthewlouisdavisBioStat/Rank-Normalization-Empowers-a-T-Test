@@ -1,4 +1,4 @@
-# Rank-Normalization-Empowers-a-T-Test.
+# Rank Normalization Empowers a \textit{t}-test for Microbiome Differential Abundance Analysis while Controlling for False Discoveries.
 ## Supplementary Materials and Software Associated with the Publication.
 
 Attached here are all of the data files and code needed to reproduce all the findings and results from the study. Contact matthew-l-davis@uiowa.edu for any other requests.
