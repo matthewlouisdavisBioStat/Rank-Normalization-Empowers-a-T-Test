@@ -89,7 +89,7 @@ for(dat in seq){
       if(x == "NaN"){
         0
       } else{
-        1-as.numeric(as.character(x))
+        as.numeric(as.character(x))
       }
     })
     Res <- ResTemp
@@ -125,7 +125,7 @@ for(dat in seq){
 }
 endd <- Sys.time()
 endd - startt
-#MasterRes$spec <- 1-as.numeric(as.character(MasterRes$spec))
+MasterRes$spec <- as.numeric(as.character(MasterRes$spec))
 MasterRes$fdr <- as.numeric(as.character(MasterRes$fdr))
 MasterRes$m <- as.numeric(as.character(MasterRes$m))
 MasterRes$effect <- as.numeric(as.character(MasterRes$effect))
