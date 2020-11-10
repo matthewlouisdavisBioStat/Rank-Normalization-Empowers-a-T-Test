@@ -35,7 +35,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
                              alt = "two.sided", adjMethod = "BH")
 {
   #if(normFacts %!in% c("rank-simple", "rank-corrected")){
-    physeq <- simpleTrimGen(physeq)
+  physeq <- simpleTrimGen(physeq)
   #} 
   #physeq <- simpleTrimGen(physeq)
   ### match type of test
@@ -84,7 +84,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
             pVals <- apply(ranks, MARGIN = 1L, 
                            function(x, ind) 
                            {Pval=try(wilcox.test(x = x[ind], y = x[!ind], exact = FALSE, 
-                                            alternative = alt)$p.value, silent=TRUE)
+                                                 alternative = alt)$p.value, silent=TRUE)
                            if(class(Pval)=="try-error") Pval=1
                            Pval
                            }
@@ -94,7 +94,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
             pVals <- apply(counts, MARGIN = 1L, 
                            function(x, ind) 
                            {Pval=try(wilcox.test(x = x[ind], y = x[!ind], exact = FALSE, 
-                                            alternative = alt)$p.value, silent=TRUE)
+                                                 alternative = alt)$p.value, silent=TRUE)
                            if(class(Pval)=="try-error") Pval=1
                            Pval
                            }
@@ -114,10 +114,10 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
   
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) - length(degenes) )
+  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) - length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
-
+  
   res <- matrix(c( test,
                    normFacts,
                    Sensitivity,
@@ -162,7 +162,7 @@ aldexTTest <- function(res){
   reject <-  rownames(out)[which(out[,"adjP"] < .05)]
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -221,12 +221,12 @@ edgeRRobust <- function(physeq, design = as.formula("~ group"), prior.df = 10,
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   normFacts <- ifelse(substr(normFacts, 1, 2) == "NF",
-                     substr(normFacts, 4, nchar(as.character(normFacts))),
-                     normFacts)
+                      substr(normFacts, 4, nchar(as.character(normFacts))),
+                      normFacts)
   res <- matrix(c( test,
                    normFacts,
                    Sensitivity,
@@ -248,7 +248,7 @@ edgeRRobust <- function(physeq, design = as.formula("~ group"), prior.df = 10,
 
 ### performs negative binomial two-sample test of *DESeq2* to detect Diff. Abund.
 DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
-                             normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank"), returnDispEsts = FALSE, use_ranks = FALSE)
+                   normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank"), returnDispEsts = FALSE, use_ranks = FALSE)
 {
   
   ## Full example using DESeq2
@@ -286,7 +286,7 @@ DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -311,8 +311,8 @@ DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
                "pvals" = rawP)
   list
 }
-  
-  
+
+
 ### Performs Limma-Voom, robust version for eBayes fit
 limmaVoomRobust <- function (physeq, design = as.formula("~ group"), 
                              normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank", "quantile"))
@@ -351,7 +351,7 @@ limmaVoomRobust <- function (physeq, design = as.formula("~ group"),
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -428,7 +428,7 @@ metagenomeSeqZIG <- function (physeq, design = as.formula("~ group"),
   reject <-  rownames(res)[which(res[,"adjP"] < .05)]
   cor_rej <- sum(is.element(reject, degenes))
   err_rej <- sum(!is.element(reject, degenes))
-  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Specificity <- 1- (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
