@@ -47,7 +47,7 @@ degenes <- degenes
 
 cor_rej <- sum(reject %in% degenes)
 err_rej <- sum(reject %!in% degenes)
-Specificity <- 1-err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+Specificity <- 1-(err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
 Sensitivity <- cor_rej / length(degenes)
 FDR <- err_rej / (cor_rej + err_rej)
 
