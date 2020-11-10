@@ -19,7 +19,8 @@ for(i in reqpkg)
 ##     https://users.ugent.be/~shawinke/ABrokenPromise/
 ## All credit goes to Hawinkel et al, not me
 
-## Get data files from
+## Get data files from either the github link (hmp_data.zip) provided, 
+## or from the links below
 # OTU table:
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v13.txt.gz
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v35.txt.gz
