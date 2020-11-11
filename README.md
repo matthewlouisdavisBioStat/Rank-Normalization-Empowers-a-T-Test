@@ -31,7 +31,7 @@ RISK (as curated by MicrobeDS https://github.com/twbattaglia/MicrobeDS)
 Zeller (see https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4299606/) 
 HMP (see https://rdrr.io/github/waldronlab/HMP16SData/src/inst/scripts/make-data.R)
 
-- covList.RData: Variance-covariance structure of Mid Vigina HMP Template as estimated by SpiecEasi (loaded in DataGeneration.R).
+- covList.RData: Variance-covariance structure of Mid Vigina HMP Template as estimated by SpiecEasi (loaded in DataGeneration.R). This was requested directly from Hawinkel, who kindly provided it.
 - msb0010-0766-sd2.xlsx: Sample Data/Metadata on participants in Zeller study (loaded by RealDataAnalysis.R.).
 - msb0010-0766-sd4.xlsx: OTU table in Zeller study, taken from supplementary materials (loaded by RealDataAnalysis.R).
 - otu_table_psn_v13.txt.gz and otu_table_psn_v35.txt.gz: OTU tables for HMP data (loaded by ImportHMPData.R).
