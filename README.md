@@ -21,7 +21,7 @@ Much of the following code was adapted from materials previously made freely ava
 - RunTestFunction.R: Called by RunSim.R, to apply the differential abundance tests to a given dataset.
 - Tests.R: Differential abundance detection methodologies for simulations.
 - fastTTest: Perform a t-test simultaneously across all rows of an OTU table.
-- msWALHMP.R: Code copied and pasted from https://github.com/mafed/msWaldHMP for modelling microbiome counts, called by DataGeneration.R.
+- msWALDHMP.R: Code copied and pasted from https://github.com/mafed/msWaldHMP for modelling microbiome counts, called by DataGeneration.R.
 - rankNormPlots.Rmd: RMarkdown code to plot and explore the ranks and t-statistics on real datasets
 
 ##  data
