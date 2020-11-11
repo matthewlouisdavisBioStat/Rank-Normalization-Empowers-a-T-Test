@@ -7,7 +7,7 @@ Attached here are all of the data files and code needed to reproduce all the fin
   
 Performs rank normalization with a t-test on fabricated microbiome data, only using base R.
 
-##  /RCode/:
+##  RCode:
 
 Much of the following code was adapted from materials previously made freely available by Hawinkel et al. at https://users.ugent.be/~shawinke/ABrokenPromise/. See their original benchmarking study for further details https://pubmed.ncbi.nlm.nih.gov/28968702/.
 
@@ -24,7 +24,7 @@ Much of the following code was adapted from materials previously made freely ava
 - msWALHMP.R: Code copied and pasted from https://github.com/mafed/msWaldHMP for modelling microbiome counts, called by DataGeneration.R.
 - rankNormPlots.Rmd: RMarkdown code to plot and explore the ranks and t-statistics on real datasets
 
-##  /data/:
+##  data:
 
 Data Sources: 
 RISK (as curated by MicrobeDS https://github.com/twbattaglia/MicrobeDS)
@@ -39,7 +39,7 @@ HMP (see https://rdrr.io/github/waldronlab/HMP16SData/src/inst/scripts/make-data
 - v13_map_uniquebyPSN.txt.bz and v35_map_uniquebyPSN.txt.bz: Connects metadata/sample data for HMP data to OTU table (loaded by ImportHMPData.R). 
 - v13_v35_psn_otu.genus.fixed.zip: zipped files of OTU tables for HMP data (both v13_psn_otu.genus.fixed.txt and v13_psn_otu.genus.fixed.txt loaded by ImportHMPData.R).
 
-##  /results/:
+##  results:
 
 Data tables corresponding to simulation and real data analysis results presented in the manuscript. 
 
