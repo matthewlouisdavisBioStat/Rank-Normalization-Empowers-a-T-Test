@@ -1,7 +1,7 @@
 
   # Simple Demonstration of Rank Normalization Paired with a T-Test
 
-## Make up an OTU Table with arbitrary Values
+## Make up an OTU Table with arbitrary values
 otu_table <- matrix(rpois(100000,100)*rbinom(100000,1,0.5),nrow= 1000)
 colnames(otu_table) <- sample(c("control sample","treatment sample"),
                               ncol(otu_table),replace= TRUE)
