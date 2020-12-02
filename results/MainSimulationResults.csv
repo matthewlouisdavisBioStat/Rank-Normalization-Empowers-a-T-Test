@@ -1,0 +1,145 @@
+Methodology,Mean Sensitivity (+/- SE),Mean FDR (+/- SE),Sample Size Per Condition,Fold-Change,Distribution
+ALDEx2,0.042 +/- (0.034),0,50,3,Negative Binomial
+ALDEx2,0.152 +/- (0.059),0,50,5,Negative Binomial
+ALDEx2,0.136 +/- (0.049),0.004 +/- (0.022),100,3,Negative Binomial
+ALDEx2,0.239 +/- (0.043),0.026 +/- (0.08),100,5,Negative Binomial
+ALDEx2,0.209 +/- (0.03),0.003 +/- (0.012),150,3,Negative Binomial
+ALDEx2,0.246 +/- (0.046),0.081 +/- (0.118),150,5,Negative Binomial
+ALDEx2,0.001 +/- (0.003),0,50,3,Beta-Binomial
+ALDEx2,0.016 +/- (0.013),0,50,5,Beta-Binomial
+ALDEx2,0.016 +/- (0.013),0,100,3,Beta-Binomial
+ALDEx2,0.049 +/- (0.023),0.005 +/- (0.025),100,5,Beta-Binomial
+ALDEx2,0.02 +/- (0.013),0,150,3,Beta-Binomial
+ALDEx2,0.092 +/- (0.024),0.021 +/- (0.051),150,5,Beta-Binomial
+CSS MetagenomeSeq,0.493 +/- (0.059),0.74 +/- (0.027),50,3,Negative Binomial
+CSS MetagenomeSeq,0.662 +/- (0.05),0.683 +/- (0.031),50,5,Negative Binomial
+CSS MetagenomeSeq,0.595 +/- (0.054),0.675 +/- (0.029),100,3,Negative Binomial
+CSS MetagenomeSeq,0.768 +/- (0.04),0.644 +/- (0.036),100,5,Negative Binomial
+CSS MetagenomeSeq,0.689 +/- (0.05),0.608 +/- (0.026),150,3,Negative Binomial
+CSS MetagenomeSeq,0.862 +/- (0.031),0.608 +/- (0.041),150,5,Negative Binomial
+CSS MetagenomeSeq,0.538 +/- (0.061),0.839 +/- (0.019),50,3,Beta-Binomial
+CSS MetagenomeSeq,0.716 +/- (0.056),0.821 +/- (0.03),50,5,Beta-Binomial
+CSS MetagenomeSeq,0.645 +/- (0.046),0.824 +/- (0.024),100,3,Beta-Binomial
+CSS MetagenomeSeq,0.818 +/- (0.05),0.808 +/- (0.025),100,5,Beta-Binomial
+CSS MetagenomeSeq,0.706 +/- (0.048),0.792 +/- (0.025),150,3,Beta-Binomial
+CSS MetagenomeSeq,0.888 +/- (0.031),0.79 +/- (0.026),150,5,Beta-Binomial
+CSS T-test,0.076 +/- (0.024),0,50,3,Negative Binomial
+CSS T-test,0.122 +/- (0.032),0.01 +/- (0.028),50,5,Negative Binomial
+CSS T-test,0.048 +/- (0.025),0,100,3,Negative Binomial
+CSS T-test,0.119 +/- (0.034),0.036 +/- (0.079),100,5,Negative Binomial
+CSS T-test,0.044 +/- (0.027),0,150,3,Negative Binomial
+CSS T-test,0.13 +/- (0.052),0.031 +/- (0.063),150,5,Negative Binomial
+CSS T-test,0,0,50,3,Beta-Binomial
+CSS T-test,0.002 +/- (0.004),0,50,5,Beta-Binomial
+CSS T-test,0.003 +/- (0.006),0,100,3,Beta-Binomial
+CSS T-test,0.014 +/- (0.012),0,100,5,Beta-Binomial
+CSS T-test,0.008 +/- (0.008),0,150,3,Beta-Binomial
+CSS T-test,0.032 +/- (0.016),0,150,5,Beta-Binomial
+CSS Wilcox,0.222 +/- (0.039),0.005 +/- (0.025),50,3,Negative Binomial
+CSS Wilcox,0.243 +/- (0.041),0.044 +/- (0.081),50,5,Negative Binomial
+CSS Wilcox,0.234 +/- (0.04),0.037 +/- (0.097),100,3,Negative Binomial
+CSS Wilcox,0.261 +/- (0.047),0.239 +/- (0.241),100,5,Negative Binomial
+CSS Wilcox,0.241 +/- (0.029),0.046 +/- (0.098),150,3,Negative Binomial
+CSS Wilcox,0.327 +/- (0.06),0.475 +/- (0.255),150,5,Negative Binomial
+CSS Wilcox,0.008 +/- (0.008),0,50,3,Beta-Binomial
+CSS Wilcox,0.072 +/- (0.033),0.004 +/- (0.02),50,5,Beta-Binomial
+CSS Wilcox,0.05 +/- (0.023),0,100,3,Beta-Binomial
+CSS Wilcox,0.265 +/- (0.055),0.024 +/- (0.042),100,5,Beta-Binomial
+CSS Wilcox,0.141 +/- (0.046),0.002 +/- (0.012),150,3,Beta-Binomial
+CSS Wilcox,0.471 +/- (0.054),0.061 +/- (0.05),150,5,Beta-Binomial
+DESeq2,0.352 +/- (0.033),0.534 +/- (0.064),50,3,Negative Binomial
+DESeq2,0.459 +/- (0.057),0.553 +/- (0.107),50,5,Negative Binomial
+DESeq2,0.459 +/- (0.048),0.615 +/- (0.068),100,3,Negative Binomial
+DESeq2,0.629 +/- (0.046),0.655 +/- (0.06),100,5,Negative Binomial
+DESeq2,0.549 +/- (0.053),0.679 +/- (0.047),150,3,Negative Binomial
+DESeq2,0.719 +/- (0.051),0.697 +/- (0.033),150,5,Negative Binomial
+DESeq2,0.068 +/- (0.026),0.155 +/- (0.172),50,3,Beta-Binomial
+DESeq2,0.15 +/- (0.035),0.178 +/- (0.107),50,5,Beta-Binomial
+DESeq2,0.139 +/- (0.036),0.256 +/- (0.118),100,3,Beta-Binomial
+DESeq2,0.272 +/- (0.054),0.247 +/- (0.128),100,5,Beta-Binomial
+DESeq2,0.189 +/- (0.047),0.273 +/- (0.12),150,3,Beta-Binomial
+DESeq2,0.382 +/- (0.054),0.309 +/- (0.097),150,5,Beta-Binomial
+RANK T-test,0.176 +/- (0.053),0,50,3,Negative Binomial
+RANK T-test,0.235 +/- (0.043),0.018 +/- (0.03),50,5,Negative Binomial
+RANK T-test,0.233 +/- (0.039),0.011 +/- (0.036),100,3,Negative Binomial
+RANK T-test,0.273 +/- (0.049),0.096 +/- (0.148),100,5,Negative Binomial
+RANK T-test,0.244 +/- (0.031),0.035 +/- (0.075),150,3,Negative Binomial
+RANK T-test,0.354 +/- (0.061),0.217 +/- (0.183),150,5,Negative Binomial
+RANK T-test,0.006 +/- (0.01),0,50,3,Beta-Binomial
+RANK T-test,0.082 +/- (0.038),0.004 +/- (0.02),50,5,Beta-Binomial
+RANK T-test,0.051 +/- (0.025),0,100,3,Beta-Binomial
+RANK T-test,0.3 +/- (0.05),0.025 +/- (0.028),100,5,Beta-Binomial
+RANK T-test,0.154 +/- (0.04),0.004 +/- (0.015),150,3,Beta-Binomial
+RANK T-test,0.526 +/- (0.036),0.048 +/- (0.034),150,5,Beta-Binomial
+TMM EdgeR,0.516 +/- (0.066),0.683 +/- (0.029),50,3,Negative Binomial
+TMM EdgeR,0.67 +/- (0.069),0.682 +/- (0.064),50,5,Negative Binomial
+TMM EdgeR,0.664 +/- (0.067),0.657 +/- (0.039),100,3,Negative Binomial
+TMM EdgeR,0.821 +/- (0.04),0.69 +/- (0.069),100,5,Negative Binomial
+TMM EdgeR,0.767 +/- (0.047),0.68 +/- (0.05),150,3,Negative Binomial
+TMM EdgeR,0.897 +/- (0.031),0.732 +/- (0.06),150,5,Negative Binomial
+TMM EdgeR,0.492 +/- (0.037),0.767 +/- (0.019),50,3,Beta-Binomial
+TMM EdgeR,0.678 +/- (0.066),0.723 +/- (0.043),50,5,Beta-Binomial
+TMM EdgeR,0.542 +/- (0.068),0.701 +/- (0.04),100,3,Beta-Binomial
+TMM EdgeR,0.746 +/- (0.08),0.686 +/- (0.064),100,5,Beta-Binomial
+TMM EdgeR,0.597 +/- (0.045),0.647 +/- (0.058),150,3,Beta-Binomial
+TMM EdgeR,0.814 +/- (0.066),0.659 +/- (0.066),150,5,Beta-Binomial
+TMM T-test,0.078 +/- (0.025),0.011 +/- (0.057),50,3,Negative Binomial
+TMM T-test,0.119 +/- (0.033),0.064 +/- (0.122),50,5,Negative Binomial
+TMM T-test,0.053 +/- (0.024),0.008 +/- (0.04),100,3,Negative Binomial
+TMM T-test,0.118 +/- (0.035),0.039 +/- (0.093),100,5,Negative Binomial
+TMM T-test,0.044 +/- (0.026),0,150,3,Negative Binomial
+TMM T-test,0.141 +/- (0.05),0.039 +/- (0.065),150,5,Negative Binomial
+TMM T-test,0,0,50,3,Beta-Binomial
+TMM T-test,0.001 +/- (0.004),0,50,5,Beta-Binomial
+TMM T-test,0.002 +/- (0.004),0,100,3,Beta-Binomial
+TMM T-test,0.008 +/- (0.008),0.04 +/- (0.2),100,5,Beta-Binomial
+TMM T-test,0.004 +/- (0.006),0,150,3,Beta-Binomial
+TMM T-test,0.019 +/- (0.016),0.059 +/- (0.133),150,5,Beta-Binomial
+TMM Voom,0.215 +/- (0.041),0.003 +/- (0.011),50,3,Negative Binomial
+TMM Voom,0.252 +/- (0.037),0.061 +/- (0.089),50,5,Negative Binomial
+TMM Voom,0.24 +/- (0.044),0.011 +/- (0.026),100,3,Negative Binomial
+TMM Voom,0.328 +/- (0.084),0.155 +/- (0.127),100,5,Negative Binomial
+TMM Voom,0.262 +/- (0.03),0.042 +/- (0.056),150,3,Negative Binomial
+TMM Voom,0.497 +/- (0.106),0.273 +/- (0.176),150,5,Negative Binomial
+TMM Voom,0.012 +/- (0.025),0.039 +/- (0.195),50,3,Beta-Binomial
+TMM Voom,0.139 +/- (0.177),0.128 +/- (0.307),50,5,Beta-Binomial
+TMM Voom,0.117 +/- (0.214),0.226 +/- (0.412),100,3,Beta-Binomial
+TMM Voom,0.321 +/- (0.259),0.354 +/- (0.441),100,5,Beta-Binomial
+TMM Voom,0.226 +/- (0.257),0.192 +/- (0.347),150,3,Beta-Binomial
+TMM Voom,0.462 +/- (0.259),0.385 +/- (0.42),150,5,Beta-Binomial
+TMM Wilcox,0.224 +/- (0.038),0.01 +/- (0.027),50,3,Negative Binomial
+TMM Wilcox,0.243 +/- (0.041),0.168 +/- (0.171),50,5,Negative Binomial
+TMM Wilcox,0.235 +/- (0.041),0.053 +/- (0.095),100,3,Negative Binomial
+TMM Wilcox,0.262 +/- (0.046),0.324 +/- (0.257),100,5,Negative Binomial
+TMM Wilcox,0.243 +/- (0.029),0.193 +/- (0.162),150,3,Negative Binomial
+TMM Wilcox,0.329 +/- (0.063),0.512 +/- (0.219),150,5,Negative Binomial
+TMM Wilcox,0.007 +/- (0.007),0,50,3,Beta-Binomial
+TMM Wilcox,0.067 +/- (0.031),0.012 +/- (0.044),50,5,Beta-Binomial
+TMM Wilcox,0.047 +/- (0.022),0,100,3,Beta-Binomial
+TMM Wilcox,0.261 +/- (0.057),0.061 +/- (0.095),100,5,Beta-Binomial
+TMM Wilcox,0.14 +/- (0.043),0.003 +/- (0.013),150,3,Beta-Binomial
+TMM Wilcox,0.467 +/- (0.055),0.082 +/- (0.075),150,5,Beta-Binomial
+TSS T-test,0.069 +/- (0.028),0,50,3,Negative Binomial
+TSS T-test,0.137 +/- (0.036),0,50,5,Negative Binomial
+TSS T-test,0.063 +/- (0.028),0,100,3,Negative Binomial
+TSS T-test,0.145 +/- (0.035),0.04 +/- (0.075),100,5,Negative Binomial
+TSS T-test,0.07 +/- (0.032),0.023 +/- (0.082),150,3,Negative Binomial
+TSS T-test,0.17 +/- (0.048),0.071 +/- (0.061),150,5,Negative Binomial
+TSS T-test,0 +/- (0.002),0,50,3,Beta-Binomial
+TSS T-test,0.006 +/- (0.007),0,50,5,Beta-Binomial
+TSS T-test,0.007 +/- (0.007),0,100,3,Beta-Binomial
+TSS T-test,0.022 +/- (0.014),0,100,5,Beta-Binomial
+TSS T-test,0.01 +/- (0.009),0,150,3,Beta-Binomial
+TSS T-test,0.05 +/- (0.017),0.028 +/- (0.057),150,5,Beta-Binomial
+TSS Wilcox,0.2 +/- (0.045),0,50,3,Negative Binomial
+TSS Wilcox,0.24 +/- (0.042),0.009 +/- (0.027),50,5,Negative Binomial
+TSS Wilcox,0.233 +/- (0.039),0.01 +/- (0.022),100,3,Negative Binomial
+TSS Wilcox,0.259 +/- (0.047),0.311 +/- (0.301),100,5,Negative Binomial
+TSS Wilcox,0.241 +/- (0.03),0.155 +/- (0.195),150,3,Negative Binomial
+TSS Wilcox,0.327 +/- (0.058),0.663 +/- (0.224),150,5,Negative Binomial
+TSS Wilcox,0.006 +/- (0.008),0,50,3,Beta-Binomial
+TSS Wilcox,0.073 +/- (0.034),0.004 +/- (0.02),50,5,Beta-Binomial
+TSS Wilcox,0.052 +/- (0.023),0,100,3,Beta-Binomial
+TSS Wilcox,0.264 +/- (0.057),0.026 +/- (0.044),100,5,Beta-Binomial
+TSS Wilcox,0.142 +/- (0.044),0.002 +/- (0.012),150,3,Beta-Binomial
+TSS Wilcox,0.47 +/- (0.055),0.073 +/- (0.063),150,5,Beta-Binomial

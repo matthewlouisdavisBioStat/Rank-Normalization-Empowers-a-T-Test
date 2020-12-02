@@ -1,0 +1,15 @@
+,Percent.Agreement,Number.Rejected,Percent.Shared.with.T.Test.Ranks
+wilcox_tss,83.33333333,6,83.33333333
+wilcox_tmm,77.77777778,9,55.55555556
+wilcox_css,81.81818182,11,45.45454545
+voom_tss,0,0,0
+voom_tmm,0,0,0
+voom_css,2.205882353,680,0.735294118
+t-test_tss,0,0,0
+t-test_tmm,0,0,0
+t-test_ranks,100,5,100
+t-test_css,0,0,0
+metagenomeSeq,4.864864865,370,1.351351351
+edgeR,6.567164179,335,1.492537313
+DESeq2,27.08333333,48,10.41666667
+aldex,100,3,100
