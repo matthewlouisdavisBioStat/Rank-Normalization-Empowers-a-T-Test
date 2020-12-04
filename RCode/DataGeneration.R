@@ -4,8 +4,7 @@
 
 ## Contains only code necessary to generate simulated datasets considered
 ## Code was adapted for non-parallel computation and streamlined for H1 midV
-## Some Code is extraneous, artifacts from simulations not considered
-## I do not take credit for this code, this goes to Hawinkel et al.
+## from Hawinkel et al.
 
 
 ## distribution to generate data from
