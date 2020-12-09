@@ -27,7 +27,7 @@ permTest <- function(    otu_table,  # rows as taxa, columns as samples
   ncol <- ncol(otu_table)
   if(makeCluster){
     cl <- makeCluster(ncores)
-    doSNOW::registerDoSNOW(cl)
+    registerDoSNOW(cl)
   }
   TPerm <- foreach(i = 1:N, .combine = "cbind") %dopar% {
     ## Permute Column Labels
