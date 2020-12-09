@@ -1,8 +1,8 @@
 
   # Simple Demonstration of Rank Normalization Paired with a T-Test
 
-## Make up an OTU Table with arbitrary values
-otu_table <- matrix(rpois(100000,100)*rbinom(100000,1,0.5),nrow= 1000)
+## Make up an OTU Table with arbitrary values ## 
+otu_table <- matrix(rpois(100000,100)*rbinom(100000,1,0.2),nrow= 1000)
 colnames(otu_table) <- sample(c("control sample","treatment sample"),
                               ncol(otu_table),replace= TRUE)
 control_indices <- which(colnames(otu_table) == "control sample")
@@ -10,15 +10,15 @@ treatment_indices <- which(colnames(otu_table) == "treatment sample")
 rownames(otu_table) <- paste0("OTU_",1:nrow(otu_table))
 head(otu_table[,1:5])
 
-## Perform DAA using rank normalization with a t-test
-#1) Exclude OTU with only 0s
+## Perform DAA using rank normalization with a t-test ## 
+
+    #1) Exclude OTU with only 0s
 otu_table <- otu_table[rowSums(otu_table) > 0,] 
 
-#2) Rank samples in ascending order, using average-ties
+    #2) Rank samples in ascending order, using average-ties
 ranks <- apply(otu_table,2,rank) 
 
-#3) Perform t-test across ranks with respect to the two groups,
-#   for each OTU
+    #3) For each OTU, perform t-test across ranks 
 results <- list() 
 for(i in 1:nrow(ranks)){
   results[[paste0("OTU_",i)]] <- 
@@ -26,31 +26,5 @@ for(i in 1:nrow(ranks)){
            ranks[i,treatment_indices])
 }
 
-## Results for OTU 1
+## Results for OTU 1 ##
 results$OTU_1
-
-
-################################################################################
-
-    ## Increase the speed of a t-test with vectorization
-
-## Matt's function to conduct Welch's Two-Sample t-test across all rows at once
-fastT <- function(otu, ## otu_table, matrix with rows as taxa columns as samples
-                  indg1, ## treatment indices
-                  indg2){ ## control indices
-  l1 <- length(indg1)
-  l2 <- length(indg2)
-  S1 <- (rowSums((otu[,indg1] - rowMeans(otu[,indg1]))^2) / (l1 - 1))
-  S2 <- (rowSums((otu[,indg2] - rowMeans(otu[,indg2]))^2) / (l2 - 1))
-  sigmas <- sqrt ( S1/l1 + S2/l2 )
-  df <- sigmas^4  / ( ((l1^2 * (l1-1))^-1 *  S1^2) + ((l2^2 * (l2-1))^-1 *  S2^2) )
-  ## 
-  obsT <- (rowMeans(otu[,indg1]) - rowMeans(otu[,indg2])) / sigmas
-  ## 
-  pvals <- 2*(1-pt(abs(obsT), df = df))
-  ifelse(is.nan(pvals), 1, pvals)
-}
-
-## returns raw p-values
-results <- fastT(ranks,treatment_indices,control_indices)
-head(results)
