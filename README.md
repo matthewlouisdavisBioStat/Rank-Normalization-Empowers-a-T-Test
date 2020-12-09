@@ -14,7 +14,7 @@ Much of the following code was adapted from materials previously made freely ava
 - DataGeneration.R: Generate simulated datasets under 'H1 without compensation' using Mid Vagina HMP template, with negative binomial and beta-binomial distributions.
 - ImportHMPData.R: Import/Clean HMP data for simulations.
 - Normalizations.R: Code to perform normalizations for simulation testing.
-- PermutationTestExample.R: Code to perform permutation t-test on fabricated dataset.
+- PermutationTestExample.R: Code to perform permutation t-test in parallel on fabricated dataset (as a non-parametric alternative to Welch's t-test).
 - PlotResults.R: Plot and recreate the scatterplots summarizing simulation results.
 - RealDataAnalysis.R: Code to perform all real data analysis for all methodologies, as well as reproduce results from the study.
 - RunSim.R: Run differential abundance tests on simulated datasets, and record performance.
