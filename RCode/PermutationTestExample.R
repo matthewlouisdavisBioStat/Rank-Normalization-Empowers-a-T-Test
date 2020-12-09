@@ -4,15 +4,13 @@
 ################################################################################
 
 ## Nonparametric Permutation T-Test ##
-permTest <- function(    otu_table,    # rows as taxa, columns as samples
+permTest <- function(    otu_table,  # rows as taxa, columns as samples
                          ncores = 8, # number of cores used
                          N = 1000,   # number of permutations
                          indg1,      # column indices of group 1
                          indg2,      # column indices of group 2
-                         alpha = 0.05, # significance level 
-                         adj = "",   # BH? FDR? what kind of adjustment, if any
                          makeCluster = T, # if we should make a cluster within the function (unless we make one outside)
-                         juststat = FALSE){ # return only the permuted t-statistics
+                         juststat = FALSE){ # return only the permuted t-statistics, not pvalues
   ## Observed T-Statistic
   l1 <- length(indg1)
   l2 <- length(indg2)
@@ -47,41 +45,12 @@ permTest <- function(    otu_table,    # rows as taxa, columns as samples
   if(makeCluster){
     stopCluster(cl)
   }
-  if(juststat == TRUE){
+  if(juststat){
     return(TPerm)
-  }
-  
-  if(adj == "BH"){
-    ## BH correction for pvalues 
-    return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
-  } else if(adj == "fdr"){
-    ## FDR stepdown correction procedure for controlling pvalues
-    cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
-    fdrs <- rep(NA, 10000)
-    names(fdrs) <- cs
-    if(makeCluster){
-      cl <- makeCluster(4)
-      doSNOW::registerDoSNOW(cl)
-    }
-    fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
-      c <- cs[i]
-      R <- sum(abs(TObs) >= c)
-      W <- mean(colSums(TPerm >= c))
-      W/R
-    }
-    if(makeCluster){
-      stopCluster(cl)
-    }
-    diff <- abs(fdrs - alpha)
-    names(diff) <- cs
-    C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
-    ## rejections
-    return(names(TObs)[which(abs(TObs) > abs(C))])
   } else{
     ## Return raw pvalues otherwise
     return(rowMeans(abs(TPerm) > abs(TObs)))
   }
-  
 }
 ################################################################################
 
