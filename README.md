@@ -13,13 +13,13 @@ Much of the following code was adapted from materials previously made freely ava
 
 - DataGeneration.R: Generate simulated datasets under 'H1 without compensation' using Mid Vagina HMP template, with negative binomial and beta-binomial distributions.
 - ImportHMPData.R: Import/Clean HMP data for simulations.
-- Normalizations.R: Code to perform normalizations for simulation testing.
+- Normalizations.R: Code to perform normalizations for simulation testing,called by RunTestFunction.R.
 - PermutationTestExample.R: Code to perform permutation t-test in parallel on fabricated dataset (as a non-parametric alternative to Welch's t-test).
 - PlotResults.R: Plot and recreate the scatterplots summarizing simulation results.
-- RealDataAnalysis.R: Code to perform all real data analysis for all methodologies, as well as reproduce results from the study.
+- RealDataAnalysis.R: Code to perform all real data analysis for all methodologies.
 - RunSim.R: Run differential abundance tests on simulated datasets, and record performance.
 - RunTestFunction.R: Called by RunSim.R, to apply the differential abundance tests to a given dataset.
-- Tests.R: Differential abundance detection methodologies for simulations.
+- Tests.R: Differential abundance detection methodologies for simulations, called by RunTestFunction.R.
 - fastTTest: Perform a t-test simultaneously across all rows of an OTU table.
 - msWALDHMP.R: Code copied and pasted from https://github.com/mafed/msWaldHMP for modelling microbiome counts, called by DataGeneration.R.
 - rankNormPlots.Rmd: RMarkdown code to plot and explore the ranks and t-statistics on real datasets
