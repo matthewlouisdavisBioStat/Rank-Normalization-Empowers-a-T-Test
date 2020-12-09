@@ -74,11 +74,8 @@ library(foreach)
 library(doSNOW)
 library(parallel)
 
-cl <- makeCluster(8)
-registerDoSNOW(cl)
 pvals <- permTest(ranks, 
                 N = 500,
                 indg1 = control_indices,
                 indg2 = treatment_indices) #,
-stopCluster(cl)
 head(pvals)
