@@ -5,11 +5,11 @@
 
 ## Nonparametric Permutation T-Test ##
 permTest <- function(    otu_table,  # rows as taxa, columns as samples
-                         ncores = 8, # number of cores used
+                         ncores = 4, # number of cores used
                          N = 1000,   # number of permutations
                          indg1,      # column indices of group 1
                          indg2,      # column indices of group 2
-                         makeCluster = T, # if we should make a cluster within the function (unless we make one outside)
+                         makeCluster = TRUE, # if we should make a cluster within the function (unless we make one outside)
                          juststat = FALSE){ # return only the permuted t-statistics, not pvalues
   ## Observed T-Statistic
   l1 <- length(indg1)
