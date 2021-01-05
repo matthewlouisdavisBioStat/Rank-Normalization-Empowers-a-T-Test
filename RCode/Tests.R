@@ -16,7 +16,7 @@ simpleTrimGen <- function(obj, minReads = 1, minPrev = 0.05) {
   }  # END - ifelse: obj is *phyloseq* or just *matrix*
   
   prevalence <- rowMeans(otuTab >= minReads)
-  indOTUs2Keep <- (prevalence >= minPrev)
+  indOTUs2Keep <- (prevalence > minPrev)
   
   if (class(obj) == "phyloseq") {
     obj = prune_taxa(obj, taxa = indOTUs2Keep)
