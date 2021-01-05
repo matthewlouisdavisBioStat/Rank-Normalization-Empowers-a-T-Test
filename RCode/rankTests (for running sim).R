@@ -14,7 +14,7 @@ indg2 <- which(sample_data$group == "grp2")
 minReads <- 1
 minPrev <- 0.05
 prevalence <- rowMeans(otu_table >= minReads)
-indOTUs2Keep <- (prevalence >= minPrev)
+indOTUs2Keep <- (prevalence > minPrev)
 nonzeroind <- indOTUs2Keep
 
   ## Rank Normalization with a T-Test
