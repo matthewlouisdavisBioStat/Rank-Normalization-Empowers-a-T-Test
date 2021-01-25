@@ -1,4 +1,4 @@
-Methodology,Mean Sensitivity (+/- SD),Mean FDR (+/- SD),Sample Size Per Condition,Fold-Change,Distribution
+Methodology,Mean Sensitivity (+/- SE),Mean FDR (+/- SE),Sample Size Per Condition,Fold-Change,Distribution
 ALDEx2 T-test,0.042 +/- (0.034),0,50,3,Negative Binomial
 ALDEx2 T-test,0.152 +/- (0.059),0,50,5,Negative Binomial
 ALDEx2 T-test,0.136 +/- (0.049),0.004 +/- (0.022),100,3,Negative Binomial
