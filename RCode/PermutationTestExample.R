@@ -1,4 +1,3 @@
-
 # Simple Demonstration of Rank Normalization With A Permutation T-Test
 
 ################################################################################
@@ -20,7 +19,7 @@ permTest <- function(    otu_table,  # rows as taxa, columns as samples
            (l2 - 1))
   sigmas <- sqrt ( S1/l1 + S2/l2 )
   TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / 
-            sigmas
+    sigmas
   TObs <- ifelse(is.nan(TObs), 0, TObs)
   
   ## Run in Parallel
@@ -75,7 +74,7 @@ library(doSNOW)
 library(parallel)
 
 pvals <- permTest(ranks, 
-                N = 500,
-                indg1 = control_indices,
-                indg2 = treatment_indices) #,
+                  N = 500,
+                  indg1 = control_indices,
+                  indg2 = treatment_indices) #,
 head(pvals)

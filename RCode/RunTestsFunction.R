@@ -1,5 +1,5 @@
 
-runTests <- function(physeq, truede = truede, degenes = degenes) {
+runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE) {
   returnList = list()
   returnList = within(returnList, {
     
@@ -17,8 +17,12 @@ runTests <- function(physeq, truede = truede, degenes = degenes) {
     
     # When we rank, we want to normalize before trimming, not after 
     # instead, we will FIRST rank, then only analyze our same trimmming scheme
-    source("C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/rankTests (for running sim).R")
+    source("rankTests (for running sim).R")
     tTest_rank = tTest_rank
+    # if(use_perm){
+    # source("permTests (for running sim).R")
+    # permTest_rank = permTest_rank
+    # }
     
     cat("\nrankTest\t")
     # 

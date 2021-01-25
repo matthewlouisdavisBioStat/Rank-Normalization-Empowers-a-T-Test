@@ -11,6 +11,8 @@ indg2 <- which(sample_data$group == "grp2")
 
   ## Remove rows containing only 0s, but make note of the 5% prevalant OTU
   ## Recall: Other methodologies prefer 5% prevalance 
+
+  ## Rank Normalization with a T-Test
 otu_table <- otu_table[rowSums(otu_table) > 0,] # 
 minReads <- 1
 minPrev <- 0.05
@@ -18,26 +20,39 @@ prevalence <- rowMeans(otu_table >= minReads)
 indOTUs2Keep <- (prevalence > minPrev)
 nonzeroind <- indOTUs2Keep
 ranks <- apply(otu_table, 2, rank)
+#ranks <- ranks[names(nonzeroind),]
 
-if(ncol(ranks) <= 50){
-  exactt = TRUE
-} else{
-  exactt = FALSE
-}
-pvals <- apply(ranks,1,function(x)t.test(x[indg1],x[indg2],exact = exactt)$p.value)
-names(pvals) <- rownames(ranks)
 
+  ## function worked faster if I broke up into 10 little small parts
+pvals <- rowMeans(sapply(1:10,function(x){
+  #set.seed(x)
+  permTest(ranks, 
+                  N = 1000,
+                  indg1 = indg1,
+                  indg2 = indg2,
+                  makeCluster = FALSE,
+                  adj = "")})) 
+
+#,
 pvals <- pvals[names(nonzeroind)]
-padj <- p.adjust(pvals, method = "BH")
-names(padj) <- names(pvals)
-
+#padj <- pvals
+padj <- p.adjust(pvals,"BH")
+# #head(pvals)
+# names(pvals) <- rownames(ranks)
+# 
+# # padj <- rep(1, length(pvals))
+# pvals <- pvals[names(nonzeroind)]
+# padj <- p.adjust(pvals, method = "BH")
+# names(padj) <- names(pvals)
+# 
 mat <- cbind(c(pvals), c(padj))
 colnames(mat) <- c("rawP", "adjP")
 rownames(mat) <- names(pvals)
 
-test <- "t-test"
-normFacts <- "rank-simple"
+test <- "perm-test"
+normFacts <- "rank"
 reject <-  names(padj)[which(padj < .05)]
+
 degenes <- degenes
 
 cor_rej <- sum(reject %in% degenes)
@@ -59,7 +74,7 @@ colnames(res) <- c( "test",
 res[,"fdr"] <- ifelse(is.nan(res[,"fdr"]), 0, res[,"fdr"])
 res[,"fdr"] <- ifelse(res[,"fdr"] == "NaN", 0, res[,"fdr"])
 rawP <- pvals
-tTest_rank  <- list("res" = res,
+permTest_rank  <- list("res" = res,
                     "pvals" = rawP)
 Sys.time() - start
 

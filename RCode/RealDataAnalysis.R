@@ -9,19 +9,19 @@
 #     "msb0010-0766-sd4.xlsx"
 #     "msb0010-0766-sd2.xlsx"
 ## and save in datawd
-#dataset <- c("Zeller"); datawd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
 
 ## Load MicrobeDS curated data
 dataset <- c("RISK"); library(MicrobeDS)
+#dataset <- c("Zeller"); datawd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
 
 ## Load Libraries
 library(dplyr)
 library(readxl)
-#library(metagenomeSeq)
-#library(edgeR)
-#library(limma)
-#library(DESeq2)
-#library(ALDEx2)
+library(metagenomeSeq)
+library(edgeR)
+library(limma)
+library(DESeq2)
+library(ALDEx2)
 library(phyloseq)
 ################################################################################
 

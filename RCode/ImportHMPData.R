@@ -19,19 +19,10 @@ for(i in reqpkg)
 ##     https://users.ugent.be/~shawinke/ABrokenPromise/
 ## All credit goes to Hawinkel et al, not me
 
-## Get data files from either the github link (hmp_data.zip) provided, 
-## or from the links below
+## Get data files from
 # OTU table:
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v13.txt.gz
 # http://downloads.ihmpdcc.org/data/HMQCP/otu_table_psn_v35.txt.gz
-
-
-## Get filtered/cleaned OTU table from my github
-# github.com/matthewlouisdavisBioStat/Rank-Normalization-Empowers-a-T-Test
-# in the folder hmp_data.zip
-# v13_psn_otu.genus.fixed.txt
-# v35_psn_otu.genus.fixed.txt
-
 
 # Sample metadata:
 # http://downloads.ihmpdcc.org/data/HMQCP/v13_map_uniquebyPSN.txt.bz2

@@ -1,0 +1,314 @@
+---
+  title: "Rank Normalization Plots"
+author: "Matthew Davis"
+date: "9/14/2020"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readxl)
+library(magrittr)
+library(phyloseq)
+library(dplyr)
+library(foreach)
+library(doSNOW)
+library(MicrobeDS)
+library(data.table)
+hmp_wd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/brokenpromise/data_og/physeqListV13.RData"
+zeller_wd <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/RCode/"
+set.seed(52246)
+```
+
+```{r}
+## Helper Functions
+'%!in%' <- function(x,y)!(x%in%y)
+set_colnames <- function(x,colnames){
+  colnames(x) <- colnames
+  x
+}
+## For Plotting
+layout_fun <- function(dummy = TRUE){
+  if(dummy){
+    layout(matrix(c(1,1,
+                    2,2,
+                    3,3),nrow=3,byrow=TRUE))
+  }
+}
+## Performs T-Test Simultaneously Across Matrix
+fastT <- function(otu_table, indg1, indg2, sign = F,stat = "no"){
+  l1 <- length(indg1)
+  l2 <- length(indg2)
+  S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
+  S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+  sigmas <- sqrt ( S1/l1 + S2/l2 )
+  df <- sigmas^4  / ( ((l1^2 * (l1-1))^-1 *  S1^2) + ((l2^2 * (l2-1))^-1 *  S2^2) )
+  obsT <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
+  if(stat == "yes"){
+    return(obsT)
+  } else if (stat == "fat"){
+    obsT <- (abs(abs(obsT)-mean(abs(obsT))))
+    pvals <- 2*(1-pt(abs(obsT), df = df))
+  }else{
+    pvals <- 2*(1-pt(abs(obsT), df = df))
+    if(sign){
+      pvals <- pvals*sign(obsT)
+    }
+    ifelse(is.nan(pvals), 1, pvals)
+  }
+}
+```
+
+
+```{r}
+## Load and Process Data
+physeq_list <- list()
+## Import and Process Data of Zeller
+otu_table <- readxl::read_xlsx(paste0(zeller_wd,"msb0010-0766-sd4.xlsx"))
+otu_table <- as.data.frame(otu_table[2:nrow(otu_table),])
+rownames(otu_table) <- otu_table[,1]
+otu_table <- otu_table[,2:ncol(otu_table)]
+readData <- readxl::read_xlsx(paste0(zeller_wd, "msb0010-0766-sd2.xlsx"), sheet = 3)
+rawReads <- readData$`Raw Reads`
+names(rawReads) <- readData$'Sample ID'
+rawReads <- rawReads[which(names(rawReads) %in% colnames(otu_table))]
+rawReads <- as.numeric(rawReads)
+for(j in 1:ncol(otu_table)){
+  otu_table[,j] <- otu_table[,j]*rawReads[j]
+}
+sample_data <- readxl::read_xlsx(paste0(zeller_wd,"msb0010-0766-sd2.xlsx"),
+                                 sheet = 2) %>% as.data.frame %>%
+  subset(Diagnosis %in% c("Normal","Cancer")) %>%
+  as.data.frame
+
+rownames(sample_data) <- sample_data$`Sample ID`
+sample_data <- sample_data[colnames(otu_table),]
+otu_table <- as(otu_table,"matrix")
+otu_table <- otu_table[,colnames(otu_table) %in% rownames(sample_data)]
+sample_data <- sample_data[colnames(otu_table),]
+indg1 <- which(sample_data$Group == "CRC")
+indg2 <- which(sample_data$Group == "Control")
+sample_data$Group <- factor(sample_data$Group,levels = c("CRC","Control"))
+otu_table <- otu_table[rowSums(otu_table)>0,]
+design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
+physeq <- phyloseq(otu_table(otu_table,taxa_are_rows = TRUE),
+                   sample_data(sample_data))
+physeq_list[["Zeller"]] <- physeq
+## Microbe RISK CCFA dataset
+physeq <- RISK_CCFA
+tax <- tax_table(physeq) %>% as("matrix") %>% as.data.frame
+sample_data <- sample_data(physeq) %>% as.data.frame %>%
+  subset(antibiotics == "false" & ## no antibiotics
+           collection == "RISK" & ## isolates only the RISK patients, not other studies
+           diagnosis %in% c("CD","no") & ## two disease statuses of interest, excludes UC etc.
+           biopsy_location %in% c("Terminal ileum") & ## the most common biopsy location
+           diseasesubtype %in% c("iCD","no") & ## most common type of CD
+           sample_type == "biopsy" & ## Only 
+           b_cat == "B1" & ## Removed B2,B3
+           
+           ## Remove subjects with symptoms of other conditions
+           !(inflammationstatus == "inflamed" & diagnosis == "no") &
+           !(ileal_invovlement == "true" & diagnosis == "no") & 
+           !(gastric_involvement == "true" & diagnosis == "no") & 
+           !(disease_extent != "missing" & diagnosis == "no") & 
+           !(perianal != "false" & diagnosis == "no") &
+           ## Isolate females 
+           sex == "female" ## 
+  )
+## FILTER sample data for the duplicated measures
+t <- table(sample_data$host_subject_id)
+t <- t[t == 1]
+s <- (sample_data[sample_data$host_subject_id %!in% names(t),])
+s <- s[order(s$host_subject_id),]
+sample_data <- sample_data[-which(rownames(sample_data) %in% rownames(s)),]
+otu_table <- (otu_table(physeq) %>% as("matrix"))[,rownames(sample_data)]
+sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
+indg1 <- which(sample_data$diagnosis == "no")
+indg2 <- which(sample_data$diagnosis == "CD")
+sample_data$Group <- as.character(sample_data$diagnosis)
+sample_data$Group[sample_data$Group == "no"] <- "Control"
+sample_data$Group <- factor(sample_data$Group, levels = c("CD","Control"))
+sample_data <- sample_data[rownames(sample_data) %in% colnames(otu_table),]
+otu_table <- otu_table[rowSums(otu_table)>0,]
+design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
+physeq <- phyloseq(otu_table(otu_table,taxa_are_rows = TRUE),
+                   sample_data(sample_data))
+physeq_list[["RISK"]] <- physeq
+## HMP Mid Vagina Template (Used for Simulations)
+load(hmp_wd)
+physeq <- physeqListV13$Mid.vagina
+otu_table <- as(otu_table(physeq),"matrix")
+otu_table <- otu_table[rowSums(otu_table) > 0,]
+otu_table(physeq) <- otu_table(otu_table,taxa_are_rows = T)
+sample_data(physeq)$Group <- ifelse(sample_data(physeq)$RUNCENTER == "WUGC",
+                                    "Control",
+                                    "Not WUGC") %>% factor
+physeq_list[["HMP"]] <- physeq
+```
+
+## Distributions of Observed Ranks 
+```{r,fig.width = 3.5,fig.height=7}
+layout_fun()
+r_list <- list()
+for(name in names(physeq_list)){
+  physeq <- physeq_list[[name]]
+  ranks <- as(otu_table(physeq),"matrix") %>% apply(2,rank)
+  #ranks <- apply(otu_table,2,function(x)x/sum(x))
+  r_list[[name]] <- ranks
+  hist(ranks,breaks = 100,main = name,cex.axis = 1.5, cex.lab =1.5,xlim = c(min(ranks),max(ranks)))
+}
+```
+
+## Distributions of Observed T-Statistics on Ranks (Real Conditions)
+```{r}
+layout_fun()
+t_list <- list()
+for(name in names(physeq_list)){
+  physeq <- physeq_list[[name]]
+  ranks <- as(otu_table(physeq),"matrix") %>% apply(2,rank)
+  sample_data <- as.data.frame(sample_data(physeq))
+  indg1 <- which(sample_data$Group == unique(sample_data$Group)[1])
+  indg2 <- which(sample_data$Group == unique(sample_data$Group)[2])
+  t <- (fastT(ranks,indg1,indg2,stat = "yes"))
+  t_list[[name]] <- t
+  hist(t,breaks = 25,main = name,freq = FALSE, xlim = c(-6,6))
+  #qqnorm(t,main = name)
+  #abline(0,1)
+}
+```
+
+## Permutation T-Test
+```{r}
+## Permutation T-Test
+## Nonparametric Permutation T-Test ##
+permTest <- function(    otu_table,
+                         ncores = 8,
+                         N = 1000, 
+                         indg1, 
+                         indg2,
+                         alpha = 0.05,
+                         adj = "",
+                         makeCluster = T,
+                         juststat = FALSE){ # stat can be t, m for median, or r for robust
+  l1 <- length(indg1)
+  l2 <- length(indg2)
+  S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
+  S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+  sigmas <- sqrt ( S1/l1 + S2/l2 )
+  TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
+  TObs <- ifelse(is.nan(TObs), 0, TObs)
+  ## Run in Parallel
+  ncol <- ncol(otu_table)
+  if(makeCluster){
+    cl <- makeCluster(ncores)
+    doSNOW::registerDoSNOW(cl)
+  }
+  TPerm <- foreach(i = 1:N, .combine = "cbind",.packages = "Biobase") %dopar% {
+    ## Permute Column Labels
+    otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
+    ## Recalc Statistic
+    S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
+    S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
+    sigmas <- sqrt ( S1/l1 + S2/l2 )
+    TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
+    ifelse(is.nan(TP), 0, TP)
+    
+  }
+  if(makeCluster){
+    stopCluster(cl)
+  }
+  if(juststat == TRUE){
+    return(TPerm)
+  }
+  
+  if(adj == "BH"){
+    ## BH correction for pvalues
+    ## Return OTU rejected
+    return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
+  } else if(adj == "fdr"){
+    ## FDR correction procedure for controlling pvalues
+    ## Returns Rejections 
+    cs <- seq(0.00001,max(abs(TObs))-.00001, length.out = 10000)
+    fdrs <- rep(NA, 10000)
+    names(fdrs) <- cs
+    if(makeCluster){
+      cl <- makeCluster(4)
+      doSNOW::registerDoSNOW(cl)
+    }
+    fdrs <- foreach(i = 1:length(cs),.combine = "c") %dopar% {
+      c <- cs[i]
+      R <- sum(abs(TObs) >= c)
+      W <- mean(colSums(TPerm >= c))
+      W/R
+    }
+    if(makeCluster){
+      stopCluster(cl)
+    }
+    diff <- abs(fdrs - alpha)
+    names(diff) <- cs
+    C <- as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))])
+    ## rejections
+    return(names(TObs)[which(abs(TObs) > abs(C))])
+  } else{
+    ## Return raw pvalues otherwise
+    return(rowMeans(abs(TPerm) > abs(TObs)))
+  }
+  
+}
+```
+
+
+## Distributions of Permuted T-Statistics Under Null Conditions (COMPUTATIONALLY INTENSIVE!)
+```{r,eval = FALSE, include = FALSE}
+set.seed(52246)
+sys <- Sys.time()
+#load("HistData.RData")
+layout_fun()
+Sys.time() - sys
+## Build permuted distributions based on control groups to see how t-test based on ranks looks
+sys <- Sys.time()
+perm_list <- list()
+for(name in names(physeq_list)){
+  cl2 <- makeCluster(12)
+  registerDoSNOW(cl2)
+  physeq <- physeq_list[[name]]
+  ranks <- as(otu_table(physeq),"matrix")
+  ranks <- apply(ranks,2,rank)
+  otu_norm <- ranks
+
+  ## Only Use Control Samples
+  otu_norm <- otu_norm[,which(sample_data$Group == "Control")]
+  indg1 <- 1:(ncol(otu_norm)/2)
+  indg2 <- (ncol(otu_norm)/2 + 1):ncol(otu_norm)
+
+  ## Generated permuted t-statistics
+  res <- permTest(otu_norm,
+                  indg1 = indg1,
+                  indg2 = indg2,
+                  makeCluster = F,
+                  N=10000,
+                  juststat = TRUE)
+  perm_list[[name]] <- res
+  stopCluster(cl2)
+  Sys.time()-sys
+  res <- (perm_list[[name]])
+  hist(res,breaks = 100,main = name,freq = FALSE,xlab = "t",xlim = c(-5,5))
+}
+options(digits = 4)
+save.image(file = "HistData.RData")
+
+## Observed quantiles of the t-statistics
+quant <- lapply(perm_list,function(x){x <- (x); (rbind(cbind(quantile(x,c(0.025,0.975))),
+                                                       cbind(quantile(x,c(0.005,0.995))))) %>% t %>%
+  as.data.frame}) %>% rbindlist() %>% as.data.frame()
+rownames(quant) <- names(physeq_list)
+t_50 <- qt(c(0.025,0.975,0.005,0.995),df = 50)
+t_100 <- qt(c(0.025,0.975,0.005,0.995),df = 100)
+normal <- qnorm(c(0.025,0.975,0.005,0.995))
+quant <- rbind(t_50) %>% rbind(t_100) %>% rbind(normal) %>% set_colnames(colnames(quant)) %>% rbind(quant)
+print(quant)
+```
+
+
+
+

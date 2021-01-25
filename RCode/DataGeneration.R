@@ -4,12 +4,13 @@
 
 ## Contains only code necessary to generate simulated datasets considered
 ## Code was adapted for non-parallel computation and streamlined for H1 midV
-## from Hawinkel et al.
+## Some Code is extraneous, artifacts from simulations not considered
+## I do not take credit for this code, this goes to Hawinkel et al.
 
 
 ## distribution to generate data from
-distribs = c("negbinCorOut")
 #distribs = c("betabinCor")
+distribs = c("negbinCorOut")
 
 ## number of sims
 reps <- 1:25L
@@ -19,13 +20,19 @@ TPR_label <- "1"
 letter <- "A"
 
 ## 3 sample sizes * 2 FC * 25 reps each = 150
-seq <- 1:(length(reps) * 6) #c(1:150)
+#seq <- 1:(length(reps) * 6) #c(1:150)
 set.seed(52246)
 dataWD <-
 "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration"
 setwd(dataWD)
 source("msWaldHMP.R") ## copy/pasted from github
-
+knitr::opts_chunk$set(
+  cache = FALSE,
+  tidy = TRUE,
+  autodep = FALSE,
+  root.dir = WD,
+  eval = TRUE
+)
 # The required package list:
 reqpkg = c("parallel",
            "phyloseq",
@@ -61,11 +68,11 @@ sampleTypes <- c("Mid.vagina")
 nOTUs <- 1000L
 
 # # Define the number of samples in each class of a simulated experiment
-nObs <- c(50, 100, 150)
+nObs <- c(5,15,25)
 # nObs <- c(5, 100)
 
 # # The different values of effec5t size to apply
-foldEffect <- c(3, 5)
+foldEffect <- c(3,5)
 
 # # The number of cores used in parallel computing
 nCores <- 1
@@ -113,7 +120,7 @@ simParamsLabelsH1 <-
     "nSamples",
     "Distribution")
 
-
+seq <- 1:length(simParamsH1)
 #####################################################
 
 load("physeqListV13.RData")
@@ -241,12 +248,6 @@ print(length(OutLieList))
 
 ## Note From Matt: Running the actual code broke two of my university's computers
 ## I requested this directly from Hawinkel et al, who kindly provided it instead.
-#load(file = "CovListEst.RData")
-# }
-#covList = lapply(covListEst, function(x) {
-#  x$opt.cov
-#})
-#'
 load(file = "covList.RData")
 
 ### generate Dirichlet realisations, taken from gtools (identical in MCMCpack)
@@ -1034,8 +1035,8 @@ for (index in 1:length(simListH1)) {
 distr <- ""
 if (distribs == "negbinCorOut") {
   distr <- "NegBin"
-} else if (distr == "betabinCor") {
+} else if (distribs == "betabinCor") {
   distr <- "BetaBin"
 }
 save(BrokenPromiseData,
-     file = paste0("BrokenPromiseData_", distr, ".RData"))
+     file = paste0("BrokenPromiseDataJustSmallSamples_", distr, ".RData"))

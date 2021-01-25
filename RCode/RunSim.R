@@ -17,14 +17,27 @@ library(edgeR)
 library(DESeq2)
 library(metagenomeSeq)
 library(reshape2)
+## Returns pvals of each OTU by default
+library(foreach)
+library(doSNOW)
+library(parallel)
 #library(doParallel)
 
   ## Load Data
 AllData <- list()
-load(paste0(dataWD,"BrokenPromiseData_NegBin.RData"))
+#load("C:/Users/Matthew/Documents/Courses/Kai/Final Results/FourSimData/BrokenPromiseDataNegBin.RData")
+#load(paste0(dataWD,"BrokenPromiseDataAll1point5sBetaBin.RData"))
+load(paste0(dataWD,"BrokenPromiseDataJustSmallSamples_NegBin.RData"))
 AllData <- c(AllData,BrokenPromiseData)
-load(paste0(dataWD,"BrokenPromiseData_BetaBin.RData"))
-AllData <- c(AllData,BrokenPromiseData)
+#load(paste0(dataWD,"BrokenPromiseData_BetaBin.RData"))
+#AllData <- c(AllData,BrokenPromiseData)
+
+
+## Proportion of 0s per OTU Table
+lapply(AllData,function(x){
+  rowMeans(as(otu_table(x$physeq),"matrix") == 0 )
+}) %>% unlist %>% mean
+
 
 startt <- Sys.time()
 MasterRes <- data.frame()
@@ -34,6 +47,10 @@ seq <- 1:length(AllData)
 MasterRes <- data.frame()
 
 ## Run Tests 
+
+    ## for the permutation test
+cl <- makeSOCKcluster(16)
+registerDoSNOW(cl)
 for(dat in seq){
   
   print(dat)
@@ -53,9 +70,16 @@ for(dat in seq){
   sample_data$condition <- as.character(sample_data$condition)
   sample_data(physeq) <- sample_data
   
+  
+  ## In case you want to use a permutation t-test as well
+  # if(nrow(sample_data) >= 100){
+  #   use_perm_switch <- FALSE
+  # } else{
+  #   use_perm_switch <- TRUE
+  # }
   ## returns Test, Norm Sens, Spec, FDR
   ## this is a matrix 
-  Res <- try(runTests(physeq, truede = truede, degenes = degenes))
+  Res <- try(runTests(physeq, truede = truede, degenes = degenes,use_perm = use_perm_switch))
   if(class(Res) != "try-error"){
     ResTemp <- data.frame("test" = NULL, "norm" = NULL, "sens" = NULL, "spec" = NULL, "fdr" = NULL, stringsAsFactors = FALSE)
     for(resentry in 1:(length(Res))){
@@ -89,7 +113,7 @@ for(dat in seq){
       if(x == "NaN"){
         0
       } else{
-        as.numeric(as.character(x))
+        1-as.numeric(as.character(x))
       }
     })
     Res <- ResTemp
@@ -123,9 +147,10 @@ for(dat in seq){
     cat('\n\n\tWARNING: MISSED DATASET ON ', names(AllData)[dat],'\n\n')
   }
 }
+stopCluster(cl)
 endd <- Sys.time()
 endd - startt
-MasterRes$spec <- as.numeric(as.character(MasterRes$spec))
+#MasterRes$spec <- 1-as.numeric(as.character(MasterRes$spec))
 MasterRes$fdr <- as.numeric(as.character(MasterRes$fdr))
 MasterRes$m <- as.numeric(as.character(MasterRes$m))
 MasterRes$effect <- as.numeric(as.character(MasterRes$effect))
@@ -134,8 +159,11 @@ MasterRes$test <- as.character(MasterRes$test)
 MasterRes$norm <- as.character(MasterRes$norm)
 MasterRes$sim <- as.character(MasterRes$sim)
 MasterRes$test_norm <- paste(MasterRes$test, MasterRes$norm, sep = "_")
-save(MasterRes,file = paste0("MasterRes",".RData"))
-save(pvalList,file = paste0("pvalList",".RData"))
+#JustSmallSamples_BetaBin
+# save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sNegBin",".RData"))
+# save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sNegBin",".RData"))
+save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sBetaBin",".RData"))
+save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sBetaBin",".RData"))
 
 
 

@@ -1,6 +1,15 @@
 
 ## NORMALIZATIONS FROM MICROBIOME
 
+## This simply labels, otherwise we risk transforming the otu_table of the physeq
+normRank <- function(physeq)
+{
+  aux <- data.frame(sample_data(physeq))
+  aux$"NF.rank" <- 1
+  sample_data(physeq) <- aux
+  physeq
+}# END - function: normNone
+
 
 ### Unique for limma voom, similar to above, we will simply leave at 1 for now and manually apply later
 normQuantile <- function(physeq)
@@ -169,13 +178,3 @@ normCSS <- function(physeq, geoMean = FALSE, rel = 0.1)
   physeq@sam_data@names <- aux
   return(physeq)
 }
-                   
-                   
-## Unlike the others, this simply labels, doesn't actually rank
-normRank <- function(physeq)
-{
-  aux <- data.frame(sample_data(physeq))
-  aux$"NF.rank" <- 1
-  sample_data(physeq) <- aux
-  physeq
-}# END - function: normNone

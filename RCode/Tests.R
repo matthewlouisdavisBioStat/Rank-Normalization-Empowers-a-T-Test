@@ -1,4 +1,8 @@
 '%!in%' <- function(x,y)!(x %in% y)
+
+
+
+
 ### function to apply WMN test on each column and adjust pvalues
 ## We want ranks to be applied to non-trimmed data, while this is for DESeq2, LimmaVoom, etc.
 simpleTrimGen <- function(obj, minReads = 1, minPrev = 0.05) {
@@ -16,7 +20,7 @@ simpleTrimGen <- function(obj, minReads = 1, minPrev = 0.05) {
   }  # END - ifelse: obj is *phyloseq* or just *matrix*
   
   prevalence <- rowMeans(otuTab >= minReads)
-  indOTUs2Keep <- (prevalence > minPrev)
+  indOTUs2Keep <- (prevalence > minPrev) # fix: min prev for small samples is a strictly greater than
   
   if (class(obj) == "phyloseq") {
     obj = prune_taxa(obj, taxa = indOTUs2Keep)
@@ -35,7 +39,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
                              alt = "two.sided", adjMethod = "BH")
 {
   #if(normFacts %!in% c("rank-simple", "rank-corrected")){
-  physeq <- simpleTrimGen(physeq)
+    physeq <- simpleTrimGen(physeq)
   #} 
   #physeq <- simpleTrimGen(physeq)
   ### match type of test
@@ -72,10 +76,22 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
   ##  ##  ##  ##
   indg1 <- which(groupBinary == TRUE)
   indg2 <- which(groupBinary == FALSE)
+  if(ncol(counts) <= 50){
+    exactt = TRUE
+  } else{
+    exactt = FALSE
+  }
   #nonzeroind <- which(rowSums(rawcounts[,indg1]) > 0 & rowSums(rawcounts[,indg2]) > 0)
   switch (test,
           "t-test" = {
-            pVals <- fastT(counts, indg1, indg2)
+            #pVals <- fastT(counts, indg1, indg2)
+            pVals = apply(counts, MARGIN = 1L, 
+                          function(x, ind) 
+                          {Pval=try(t.test(x = x[ind], y = x[!ind], exact = exactt)$p.value, silent=TRUE)
+                          if(class(Pval)=="try-error") Pval=1
+                          Pval
+                          }
+                          ,ind = groupBinary)
           },
           "rank" = {
             pVals <- fastT(ranks, indg1, indg2)
@@ -84,7 +100,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
             pVals <- apply(ranks, MARGIN = 1L, 
                            function(x, ind) 
                            {Pval=try(wilcox.test(x = x[ind], y = x[!ind], exact = FALSE, 
-                                                 alternative = alt)$p.value, silent=TRUE)
+                                            alternative = alt)$p.value, silent=TRUE)
                            if(class(Pval)=="try-error") Pval=1
                            Pval
                            }
@@ -94,7 +110,7 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
             pVals <- apply(counts, MARGIN = 1L, 
                            function(x, ind) 
                            {Pval=try(wilcox.test(x = x[ind], y = x[!ind], exact = FALSE, 
-                                                 alternative = alt)$p.value, silent=TRUE)
+                                            alternative = alt)$p.value, silent=TRUE)
                            if(class(Pval)=="try-error") Pval=1
                            Pval
                            }
@@ -114,10 +130,10 @@ applySimpleTests <- function(physeq, test = c("t-test", "rank", "rankWilcox", "w
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
   
-  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) - length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) - length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
-  
+
   res <- matrix(c( test,
                    normFacts,
                    Sensitivity,
@@ -162,7 +178,39 @@ aldexTTest <- function(res){
   reject <-  rownames(out)[which(out[,"adjP"] < .05)]
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
+  Sensitivity <- cor_rej / length(degenes)
+  FDR <- err_rej / (cor_rej + err_rej)
+  
+  normFacts <- "aldex"
+  res <- matrix(c( test,
+                   normFacts,
+                   Sensitivity,
+                   Specificity,
+                   FDR ), nrow = 1)
+  colnames(res) <- c( "test",
+                      "norm",
+                      "sens",
+                      "spec",
+                      "fdr" )
+  
+  res[,"fdr"] <- ifelse(is.nan(res[,"fdr"]), 0, res[,"fdr"])
+  rawP <- out[,"rawP"]
+  names(rawP) <- rownames(out)
+  list <- list("res" = res,
+               "pvals" = rawP)
+  return(list)
+}
+
+aldexWTest <- function(res){
+  out = cbind(res$wi.ep, res$wi.eBH)
+  colnames(out) = c("rawP","adjP")
+  rownames(out) = rownames(res)
+  test <- "aldexW"
+  reject <-  rownames(out)[which(out[,"adjP"] < .05)]
+  cor_rej <- sum(reject %in% degenes)
+  err_rej <- sum(reject %!in% degenes)
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -221,12 +269,12 @@ edgeRRobust <- function(physeq, design = as.formula("~ group"), prior.df = 10,
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   normFacts <- ifelse(substr(normFacts, 1, 2) == "NF",
-                      substr(normFacts, 4, nchar(as.character(normFacts))),
-                      normFacts)
+                     substr(normFacts, 4, nchar(as.character(normFacts))),
+                     normFacts)
   res <- matrix(c( test,
                    normFacts,
                    Sensitivity,
@@ -248,7 +296,7 @@ edgeRRobust <- function(physeq, design = as.formula("~ group"), prior.df = 10,
 
 ### performs negative binomial two-sample test of *DESeq2* to detect Diff. Abund.
 DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
-                   normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank"), returnDispEsts = FALSE, use_ranks = FALSE)
+                             normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank"), returnDispEsts = FALSE, use_ranks = FALSE)
 {
   
   ## Full example using DESeq2
@@ -286,7 +334,7 @@ DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -311,8 +359,8 @@ DESeq2 <- function(physeq, design = as.formula("~ group"), IndepFilter = NULL,
                "pvals" = rawP)
   list
 }
-
-
+  
+  
 ### Performs Limma-Voom, robust version for eBayes fit
 limmaVoomRobust <- function (physeq, design = as.formula("~ group"), 
                              normFacts = c("doublerank","TMM", "RLE", "GMPR", "ratio", "CSS", "UQ", "none", "SAM", "TSS", "rank", "quantile"))
@@ -351,7 +399,7 @@ limmaVoomRobust <- function (physeq, design = as.formula("~ group"),
   
   cor_rej <- sum(reject %in% degenes)
   err_rej <- sum(reject %!in% degenes)
-  Specificity <- 1 - (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -428,7 +476,7 @@ metagenomeSeqZIG <- function (physeq, design = as.formula("~ group"),
   reject <-  rownames(res)[which(res[,"adjP"] < .05)]
   cor_rej <- sum(is.element(reject, degenes))
   err_rej <- sum(!is.element(reject, degenes))
-  Specificity <- 1- (err_rej / ( nrow(otu_table(physeq)) -length(degenes) ))
+  Specificity <- err_rej / ( nrow(otu_table(physeq)) -length(degenes) )
   Sensitivity <- cor_rej / length(degenes)
   FDR <- err_rej / (cor_rej + err_rej)
   
@@ -452,3 +500,80 @@ metagenomeSeqZIG <- function (physeq, design = as.formula("~ group"),
   list
 }# END - function: metagenomeSeqZIG
 # 
+
+
+
+## Matt's permutation test
+permTest <- function(    otu_table,    # rows as taxa, columns as samples
+                         ncores = 8, # number of cores used
+                         N = 1000,   # number of permutations
+                         indg1,      # column indices of group 1
+                         indg2,      # column indices of group 2
+                         alpha = 0.05, # significance level 
+                         adj = "",   # BH? FDR? what kind of adjustment, if any
+                         makeCluster = T, # if we should make a cluster within the function
+                         juststat = FALSE){ # return only the permuted t-statistics
+  ## Observed T-Statistic
+  l1 <- length(indg1)
+  l2 <- length(indg2)
+  S1 <- (rowSums((otu_table[,indg1] - rowMeans(otu_table[,indg1]))^2) / (l1 - 1))
+  S2 <- (rowSums((otu_table[,indg2] - rowMeans(otu_table[,indg2]))^2) / (l2 - 1))
+  sigmas <- sqrt ( S1/l1 + S2/l2 )
+  TObs <- (rowMeans(otu_table[,indg1]) - rowMeans(otu_table[,indg2])) / sigmas
+  TObs <- ifelse(is.nan(TObs), 0, TObs)
+  
+  ## Run in Parallel
+  ncol <- ncol(otu_table)
+  if(makeCluster){
+    cl <- makeCluster(ncores)
+    doSNOW::registerDoSNOW(cl)
+  }
+  TPerm <- foreach(i = 1:N, .combine = "cbind") %dopar% {
+    ## Permute Column Labels
+    otu_tablePerm <- otu_table[,sample(1:ncol, ncol, replace = FALSE)]
+    ## Recalc Statistic
+    S1 <- (rowSums((otu_tablePerm[,indg1] - rowMeans(otu_tablePerm[,indg1]))^2) / (l1 - 1))
+    S2 <- (rowSums((otu_tablePerm[,indg2] - rowMeans(otu_tablePerm[,indg2]))^2) / (l2 - 1))
+    sigmas <- sqrt ( S1/l1 + S2/l2 )
+    TP <- (rowMeans(otu_tablePerm[,indg1]) - rowMeans(otu_tablePerm[,indg2])) / sigmas
+    ifelse(is.nan(TP), 0, TP)
+  }
+  if(makeCluster){
+    stopCluster(cl)
+  }
+  if(juststat == TRUE){
+    return(TPerm)
+  }
+  
+  if(adj == "BH"){
+    ## BH correction for pvalues 
+    return(rownames(TPerm)[which(p.adjust(rowMeans(abs(TPerm) > abs(TObs)),"BH") <= alpha)])
+  } else if(adj == "fdr"){
+    ## FDR stepdown correction procedure for controlling pvalues
+    cs <- runif(1000,0,max(abs(TObs)))
+    fdrs <- rep(NA, 1000)
+    names(fdrs) <- cs
+    if(makeCluster){
+      cl <- makeCluster(4)
+      doSNOW::registerDoSNOW(cl)
+    }
+    fdrs <- foreach(i = 1:length(cs),.combine = "c") %do% {
+      c <- cs[i]
+      R <- sum(abs(TObs) >= c)
+      W <- mean(colSums(TPerm >= c))
+      W/R
+    }
+    if(makeCluster){
+      stopCluster(cl)
+    }
+    diff <- abs(fdrs - alpha)
+    names(diff) <- cs
+    C <- unique(as.numeric(names(diff)[which(diff == min(diff, na.rm = TRUE))]))[1]
+    ## rejections
+    return(names(TObs)[which(abs(TObs) > abs(C))])
+  } else{
+    ## Return raw pvalues otherwise
+    return(rowMeans(abs(TPerm) > abs(TObs)))
+  }
+  
+}
