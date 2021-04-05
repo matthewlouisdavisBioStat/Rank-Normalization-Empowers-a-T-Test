@@ -1,9 +1,9 @@
-'%!in%' <- function(x,y)!(x %in% y)
 
 
-
-
-### function to apply WMN test on each column and adjust pvalues
+    ## Below is the code used to perform all differential abundance analyses 
+    ## with exception to rank normalization with a t-test
+    ## Adapted from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
+    
 ## We want ranks to be applied to non-trimmed data, while this is for DESeq2, LimmaVoom, etc.
 simpleTrimGen <- function(obj, minReads = 1, minPrev = 0.05) {
   # `prevalence` is the fraction of samples in which an OTU is observed at
