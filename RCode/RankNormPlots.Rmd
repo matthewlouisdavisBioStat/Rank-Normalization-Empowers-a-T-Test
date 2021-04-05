@@ -286,7 +286,7 @@ for(name in names(physeq_list)){
                   indg1 = indg1,
                   indg2 = indg2,
                   makeCluster = F,
-                  N=10000,
+                  N=100,## 10000
                   juststat = TRUE)
   perm_list[[name]] <- res
   stopCluster(cl2)
