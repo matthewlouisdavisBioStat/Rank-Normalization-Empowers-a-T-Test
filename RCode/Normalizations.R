@@ -1,24 +1,6 @@
 
-## NORMALIZATIONS FROM MICROBIOME
-
-## This simply labels, otherwise we risk transforming the otu_table of the physeq
-normRank <- function(physeq)
-{
-  aux <- data.frame(sample_data(physeq))
-  aux$"NF.rank" <- 1
-  sample_data(physeq) <- aux
-  physeq
-}# END - function: normNone
-
-
-### Unique for limma voom, similar to above, we will simply leave at 1 for now and manually apply later
-normQuantile <- function(physeq)
-{
-  aux <- data.frame(sample_data(physeq))
-  aux$"NF.quantile" <- 1
-  sample_data(physeq) <- aux
-  physeq
-}# END - function: normNone
+    ## Functions for Normalization
+    ## code is adapted from from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
 
 
 ### Rarefy
@@ -177,4 +159,23 @@ normCSS <- function(physeq, geoMean = FALSE, rel = 0.1)
   aux[length(aux)] <- "NF.CSS"
   physeq@sam_data@names <- aux
   return(physeq)
+}
+                   
+ ## Unique for quantile normalization, leave at 1 for now and manually apply in diff abundance test
+normQuantile <- function(physeq)
+{
+  aux <- data.frame(sample_data(physeq))
+  aux$"NF.quantile" <- 1
+  sample_data(physeq) <- aux
+  physeq
+}# END - function: normNone
+                
+                   
+  ## This simply labels!! DOES NOT ACTUALLY RANK
+normRank <- function(physeq)
+{
+  aux <- data.frame(sample_data(physeq))
+  aux$"NF.rank" <- 1
+  sample_data(physeq) <- aux
+  physeq
 }
