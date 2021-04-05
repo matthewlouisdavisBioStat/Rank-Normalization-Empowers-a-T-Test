@@ -17,11 +17,6 @@ library(edgeR)
 library(DESeq2)
 library(metagenomeSeq)
 library(reshape2)
-## Returns pvals of each OTU by default
-library(foreach)
-library(doSNOW)
-library(parallel)
-#library(doParallel)
 
   ## Load Data
 AllData <- list()
@@ -47,10 +42,6 @@ seq <- 1:length(AllData)
 MasterRes <- data.frame()
 
 ## Run Tests 
-
-    ## for the permutation test
-cl <- makeSOCKcluster(16)
-registerDoSNOW(cl)
 for(dat in seq){
   
   print(dat)
@@ -71,12 +62,6 @@ for(dat in seq){
   sample_data(physeq) <- sample_data
   
   
-  ## In case you want to use a permutation t-test as well
-  # if(nrow(sample_data) >= 100){
-  #   use_perm_switch <- FALSE
-  # } else{
-  #   use_perm_switch <- TRUE
-  # }
   ## returns Test, Norm Sens, Spec, FDR
   ## this is a matrix 
   Res <- try(runTests(physeq, truede = truede, degenes = degenes,use_perm = use_perm_switch))
