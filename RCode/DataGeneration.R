@@ -1044,6 +1044,6 @@ if (distribs == "negbinCorOut") {
   distr <- "BetaBin"
 }
                     
-## customize filename to save here
+## the final simulated datasets to perform differential abundance tests on
 save(BrokenPromiseData,
      file = paste0("BrokenPromiseDataJustSmallSamples_", distr, ".RData"))
