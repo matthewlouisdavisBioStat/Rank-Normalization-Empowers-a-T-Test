@@ -2,18 +2,19 @@
 
 ## I'm using R version 3.5.1 right now
 
-## Contains only code necessary to generate simulated datasets considered
-## Code was adapted for non-parallel computation and streamlined for H1 midV
-## Source code is from https://users.ugent.be/~shawinke/ABrokenPromise/02_dataGeneration.html  
+## Contains code necessary to generate simulated datasets considered
+## Code was adapted for non-parallel computation and streamlined for H1 midVagina Template
+## Source code from https://users.ugent.be/~shawinke/ABrokenPromise/02_dataGeneration.html  
 
 
 ## distribution to generate data from
 #distribs = c("betabinCor")
 distribs = c("negbinCorOut")
 
-## number of sims
+## number of repeat datasets per unique combo of parameters
 reps <- 1:25L
 
+## true positive rate
 TPR <- .1
 TPR_label <- "1"
 letter <- "A"
@@ -32,6 +33,7 @@ knitr::opts_chunk$set(
   root.dir = WD,
   eval = TRUE
 )
+
 # The required package list:
 reqpkg = c("parallel",
            "phyloseq",
@@ -73,7 +75,7 @@ nObs <- c(5,15,25)
 # # The different values of effec5t size to apply
 foldEffect <- c(3,5)
 
-# # The number of cores used in parallel computing
+# # The number of cores used in parallel computing (I didn't use any)
 nCores <- 1
 
 # # The covariance estimation method
@@ -110,6 +112,7 @@ simParamsH1 <-
     x = simParamsH1,
     fixed = TRUE
   )
+
 # Define the labels to go with each element of the simulation parameter
 # after splitting on the delimiter
 simParamsLabelsH1 <-
@@ -1037,5 +1040,7 @@ if (distribs == "negbinCorOut") {
 } else if (distribs == "betabinCor") {
   distr <- "BetaBin"
 }
+                    
+## customize filename to save here
 save(BrokenPromiseData,
      file = paste0("BrokenPromiseDataJustSmallSamples_", distr, ".RData"))
