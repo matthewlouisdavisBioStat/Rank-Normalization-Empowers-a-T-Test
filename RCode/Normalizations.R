@@ -1,6 +1,6 @@
 
     ## Functions for Normalization
-    ## code is adapted from from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
+    ## Code is adapted from from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
 
 
 ### Rarefy
