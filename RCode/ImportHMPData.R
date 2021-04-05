@@ -1,23 +1,8 @@
 
-  ## Matt: I'm using R 3.5.1 Right Now
-
-WD =  "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration"
-knitr::opts_chunk$set(cache = TRUE, autodep = TRUE, root.dir = WD,tidy=TRUE, cache.lazy=FALSE)
-setwd(WD)
-dataWD <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration/"
-# The required package list:
-reqpkg = c("phyloseq","reshape2")
-# Load all required packages and show version
-for(i in reqpkg)
-{
-  print(i) 
-  print(packageVersion(i))
-  library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)
-}
+  ## I'm using R 3.5.1 Right Now
 
 ## All code is adapted from materials made available from
 ##     https://users.ugent.be/~shawinke/ABrokenPromise/
-## All credit goes to Hawinkel et al, not me
 
 ## Get data files from
 # OTU table:
@@ -39,6 +24,21 @@ for(i in reqpkg)
 
 
 ###################################################################################################
+
+  ## Working directory, load packages
+WD =  "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration"
+knitr::opts_chunk$set(cache = TRUE, autodep = TRUE, root.dir = WD,tidy=TRUE, cache.lazy=FALSE)
+setwd(WD)
+dataWD <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration/"
+# The required package list:
+reqpkg = c("phyloseq","reshape2")
+# Load all required packages and show version
+for(i in reqpkg)
+{
+  print(i) 
+  print(packageVersion(i))
+  library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)
+}
 
 ## Load metadata
 sampleDataV13 <- read.delim(paste0(dataWD, "v13_map_uniquebyPSN.txt.bz2"))
