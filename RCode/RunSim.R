@@ -1,13 +1,17 @@
+
+
+    ## Run Simulations 
+    ## I'm using R 3.6.3 right now
+
 set.seed(52246)
 library(magrittr)
 '%!in%' <- function(x,y)!(x %in% y)
 ## Run Tests
-setwd("C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DifferentialAbundanceTests")
+setwd("C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/RCode")
 dataWD <- "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration/"
 source("Tests.R")
 source("Normalizations.R")
 source("RunTestsFunction.R")
-source("fastTTest.R")
 
 
 library(phyloseq)
@@ -42,7 +46,9 @@ seq <- 1:length(AllData)
 MasterRes <- data.frame()
 
 ## Run Tests 
-for(dat in seq){
+
+
+for(dat in 1:2){
   
   print(dat)
   datalist <- AllData[[dat]]
@@ -61,7 +67,7 @@ for(dat in seq){
   sample_data$condition <- as.character(sample_data$condition)
   sample_data(physeq) <- sample_data
   
-  
+
   ## returns Test, Norm Sens, Spec, FDR
   ## this is a matrix 
   Res <- try(runTests(physeq, truede = truede, degenes = degenes,use_perm = use_perm_switch))
@@ -132,7 +138,6 @@ for(dat in seq){
     cat('\n\n\tWARNING: MISSED DATASET ON ', names(AllData)[dat],'\n\n')
   }
 }
-stopCluster(cl)
 endd <- Sys.time()
 endd - startt
 #MasterRes$spec <- 1-as.numeric(as.character(MasterRes$spec))
@@ -147,8 +152,8 @@ MasterRes$test_norm <- paste(MasterRes$test, MasterRes$norm, sep = "_")
 #JustSmallSamples_BetaBin
 # save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sNegBin",".RData"))
 # save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sNegBin",".RData"))
-save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sBetaBin",".RData"))
-save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sBetaBin",".RData"))
+#save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sBetaBin",".RData"))
+#save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sBetaBin",".RData"))
 
 
 
