@@ -1,4 +1,5 @@
 
+## Adapted from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
 runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE) {
   returnList = list()
   returnList = within(returnList, {
@@ -15,14 +16,9 @@ runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE
     sample_data(physeq) <- sample_data(sample_data)
     cat("\nNormalisations\t")
     
-    # When we rank, we want to normalize before trimming, not after 
-    # instead, we will FIRST rank, then only analyze our same trimmming scheme
+    # run rank normalization with t-test
     source("rankTests (for running sim).R")
     tTest_rank = tTest_rank
-    # if(use_perm){
-    # source("permTests (for running sim).R")
-    # permTest_rank = permTest_rank
-    # }
     
     cat("\nrankTest\t")
     # 
