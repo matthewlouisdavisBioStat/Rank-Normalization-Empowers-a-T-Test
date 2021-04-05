@@ -72,8 +72,8 @@ sampleTypes <- c("Mid.vagina")
 nOTUs <- 1000L
 
 # # Define the number of samples in each class of a simulated experiment
-nObs <- c(5,15,25)
-# nObs <- c(5, 100)
+nObs <- c(5,15,25) # smaller sample sizes
+# nObs <- c(50,100,150) # larger sample sizes
 
 # # The different values of effec5t size to apply
 foldEffect <- c(3,5)
@@ -1043,7 +1043,7 @@ if (distribs == "negbinCorOut") {
 } else if (distribs == "betabinCor") {
   distr <- "BetaBin"
 }
-                    
+                                                     
 ## the final simulated datasets to perform differential abundance tests on
 save(BrokenPromiseData,
      file = paste0("BrokenPromiseDataJustSmallSamples_", distr, ".RData"))
