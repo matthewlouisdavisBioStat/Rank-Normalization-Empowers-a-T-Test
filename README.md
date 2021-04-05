@@ -1,5 +1,5 @@
 # Rank Normalization Empowers a t-test for Microbiome Differential Abundance Analysis while Controlling for False Discoveries.
-## Supplementary Materials and Software Associated with the Publication.
+## Supplementary Materials and Software Associated with the Publication https://doi.org/10.1093/bib/bbab059.
 
 Attached here are all of the data files and code needed to reproduce all the findings and results from the study. Contact matthew-l-davis@uiowa.edu for any other requests.
 
