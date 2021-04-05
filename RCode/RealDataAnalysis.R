@@ -89,16 +89,6 @@ if(dataset == "Zeller"){
   design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
 }
 
-## Test if Demographic Variables May Be Controlled For
-
-# fit <- glm(factor(sample_data$Group) ~ sample_data$Gender, 
-# family = "binomial") # Alt Model
-# coef(summary(fit))
-# 
-# fit <- glm(factor(sample_data$Group) ~ 1, 
-# family = "binomial") # Null Model
-# coef(summary(fit))
-
 
 ## Microbe RISK CCFA dataset
 if(dataset == "RISK"){
@@ -139,15 +129,7 @@ if(dataset == "RISK"){
   otu_table <- otu_table[rowSums(otu_table)>0,]
   design <- model.matrix(as.formula("~ Group"), data = as.data.frame(as(sample_data,"matrix")))
 }
-## Test if Demographic Variables May Be Controlled For
 
-# fit <- glm(sample_data$diagnosis ~ sample_data$sex
-# family = "binomial") # Alt Model
-# coef(summary(fit))
-
-# fit <- glm(sample_data$diagnosis ~ 1, 
-# family = "binomial") # Null Model
-# coef(summary(fit))
 
 ################################################################################
 
