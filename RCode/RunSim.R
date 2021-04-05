@@ -48,7 +48,7 @@ MasterRes <- data.frame()
 ## Run Tests 
 
 
-for(dat in 1:2){
+for(dat in seq){
   
   print(dat)
   datalist <- AllData[[dat]]
@@ -140,8 +140,7 @@ for(dat in 1:2){
 }
 endd <- Sys.time()
 endd - startt
-#MasterRes$spec <- 1-as.numeric(as.character(MasterRes$spec))
-MasterRes$fdr <- as.numeric(as.character(MasterRes$fdr))
+
 MasterRes$m <- as.numeric(as.character(MasterRes$m))
 MasterRes$effect <- as.numeric(as.character(MasterRes$effect))
 MasterRes$propde <- as.numeric(as.character(MasterRes$propde))
@@ -149,11 +148,11 @@ MasterRes$test <- as.character(MasterRes$test)
 MasterRes$norm <- as.character(MasterRes$norm)
 MasterRes$sim <- as.character(MasterRes$sim)
 MasterRes$test_norm <- paste(MasterRes$test, MasterRes$norm, sep = "_")
-#JustSmallSamples_BetaBin
+
 # save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sNegBin",".RData"))
 # save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sNegBin",".RData"))
-#save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sBetaBin",".RData"))
-#save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sBetaBin",".RData"))
+# save(MasterRes,file = paste0("MasterResBrokenPromiseDataAll1point5sBetaBin",".RData"))
+# save(pvalList,file = paste0("pvalListBrokenPromiseDataAll1point5sBetaBin",".RData"))
 
 
 
