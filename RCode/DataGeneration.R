@@ -6,21 +6,7 @@
 ## Code was adapted for non-parallel computation and streamlined for H1 midVagina Template
 ## Source code from https://users.ugent.be/~shawinke/ABrokenPromise/02_dataGeneration.html  
 
-
-## distribution to generate data from
-#distribs = c("betabinCor")
-distribs = c("negbinCorOut")
-
-## number of repeat datasets per unique combo of parameters
-reps <- 1:25L
-
-## true positive rate
-TPR <- .1
-TPR_label <- "1"
-letter <- "A"
-
-## 3 sample sizes * 2 FC * 25 reps each = 150
-#seq <- 1:(length(reps) * 6) #c(1:150)
+##########################################################################################
 set.seed(52246)
 dataWD <-
 "C:/Users/Matthew/Documents/Courses/Kai/Final Results/Final Plots/DataGeneration"
@@ -54,6 +40,23 @@ for (i in reqpkg)
     character.only = TRUE
   )
 }
+
+
+# # distribution to generate data from
+#distribs = c("betabinCor")
+distribs = c("negbinCorOut")
+
+# # number of repeat datasets per unique combo of parameters
+reps <- 1:25L
+
+# # true positive rate
+TPR <- .1
+
+# # for labelling the file later
+TPR_label <- "1"
+
+# # for labelling the file later
+letter <- "A"
 
 # # Minimum number of reads to consider an OTU 'observed' in a sample
 minReads <- 1L
