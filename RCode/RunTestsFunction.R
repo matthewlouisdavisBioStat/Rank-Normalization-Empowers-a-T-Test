@@ -1,6 +1,6 @@
 
 ## Adapted from https://users.ugent.be/~shawinke/ABrokenPromise/03_diffAbundDetect.html
-runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE) {
+runTests <- function(physeq, truede = truede, degenes = degenes) {
   returnList = list()
   returnList = within(returnList, {
     
@@ -19,9 +19,6 @@ runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE
     # run rank normalization with t-test
     source("rankTests (for running sim).R")
     tTest_rank = tTest_rank
-    
-    # optional permutation test
-    #source("rankTests (for running sim).R")
     
     cat("\nrankTest\t")
     # 
