@@ -20,6 +20,9 @@ runTests <- function(physeq, truede = truede, degenes = degenes,use_perm = FALSE
     source("rankTests (for running sim).R")
     tTest_rank = tTest_rank
     
+    # optional permutation test
+    #source("rankTests (for running sim).R")
+    
     cat("\nrankTest\t")
     # 
      tTest_TSS = applySimpleTests(physeq, test = "t-test", normFacts = "TSS")
